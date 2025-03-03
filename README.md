@@ -17,8 +17,20 @@ mkdir Godot && cd Godot
 
 curl -o Godot.zip -L https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_linux.x86_64.zip
 unzip Godot.zip
+mv Godot_v4.4-stable_linux.x86_64 godot
+chmod +x godot
 
 curl -o export_templates.tpz -L https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_export_templates.tpz
+unzip -j export_templates.tpz -d /home/node/.local/share/godot/export_templates/4.4.stable/
+```
+
+### Build the Character Engine
+
+To build the character engine, make sure you are still in the `Godot/` directory and run:
+
+```bash
+mkdir ../static/character_engine
+./godot --path "../character_engine" --headless --export-release "Web" ../static/character_engine/character_engine.html
 ```
 
 ## Database
