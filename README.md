@@ -10,7 +10,7 @@ yarn install
 
 ### Install Godot Editor
 
-Run the following commands in the directory
+Run the following in the `Godot/` directory:
 
 ```bash
 mkdir Godot && cd Godot
@@ -21,6 +21,7 @@ mv Godot_v4.4-stable_linux.x86_64 godot
 chmod +x godot
 
 curl -o export_templates.tpz -L https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_export_templates.tpz
+mkdir -p /home/node/.local/share/godot/export_templates/4.4.stable/
 unzip -j export_templates.tpz -d /home/node/.local/share/godot/export_templates/4.4.stable/
 ```
 
@@ -35,7 +36,7 @@ mkdir ../static/character_engine
 
 ## Database
 
-First, create a `.env` file, likely copied from the `.env.example` file.
+First, create a `.env` file, likely copied from the `.env.example` file using `cp .env.example .env` ran in the root.
 
 To start the database, create a new terminal and start the database:
 
@@ -43,7 +44,7 @@ To start the database, create a new terminal and start the database:
 yarn db:start
 ```
 
-Now to migrate the database, migrate the database in the original terminal:
+Now to migrate the database, generate and confirm the migrations for the database in the original terminal:
 
 ```bash
 yarn db:push
@@ -51,7 +52,7 @@ yarn db:push
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you have installed and setup everything, start a development server:
 
 ```bash
 yarn dev
@@ -62,12 +63,10 @@ yarn dev -- --open
 
 ## Building
 
-To create a production version of your app:
+To create a production version of the app:
 
 ```bash
 yarn build
 ```
 
 You can preview the production build with `yarn preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
