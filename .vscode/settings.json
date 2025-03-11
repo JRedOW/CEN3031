@@ -14,5 +14,17 @@
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Local DB",
+            "username": "root",
+            "database": "local",
+            "password": "mysecretpassword"
+        }
+    ]
 }
