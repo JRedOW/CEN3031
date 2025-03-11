@@ -1,5 +1,9 @@
 <script lang="ts">
-    let { onMessage = (msg: string) => {} } = $props();
+    let {
+        onMessage = (msg: string) => {
+            console.log('Character Engine recieved message: ' + msg);
+        }
+    } = $props();
 
     let onmessage = (event: MessageEvent) => {
         onMessage(event.data);
