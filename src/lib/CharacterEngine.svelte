@@ -2,10 +2,19 @@
     let {
         onMessage = (msg: string) => {
             console.log('Character Engine recieved message: ' + msg);
-        }
+        },
+        debug = false
     } = $props();
 
     let onmessage = (event: MessageEvent) => {
+        try {
+            const obj = JSON.parse(event.data);
+
+            if (obj.command == 'ready') {
+                sendmessage(`{"command":"debug","debug":${debug ? 'true' : 'false'}}`);
+            }
+        } catch {}
+
         onMessage(event.data);
     };
 
@@ -15,7 +24,9 @@
     };
 </script>
 
-<iframe src="/character_engine/character_engine.html" title="Character Engine" {onmessage}></iframe>
+<iframe src="/character_engine/character_engine.html" title="Character Engine"></iframe>
+
+<svelte:window {onmessage} />
 
 <style>
     iframe {
