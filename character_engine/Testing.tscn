@@ -1,8 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://bj2auacg28xq4"]
+[gd_scene load_steps=8 format=3 uid="uid://bj2auacg28xq4"]
 
 [ext_resource type="Script" uid="uid://m7kpti8eobe7" path="res://debug/LastPostMessage.gd" id="1_axi3y"]
 [ext_resource type="Script" uid="uid://dy10r5hdd6x4" path="res://debug/DebugContainer.gd" id="1_kfraa"]
 [ext_resource type="Script" uid="uid://ghk6b34w5s5y" path="res://debug/CurrentEmotion.gd" id="3_28q7j"]
+[ext_resource type="Script" uid="uid://c3iiy8rkmt410" path="res://loading/Loading.gd" id="4_1x61k"]
+[ext_resource type="Script" uid="uid://b2y21u0e2iuee" path="res://debug/CurrentCharacter.gd" id="4_57cao"]
+[ext_resource type="Script" uid="uid://8m0fd2ncjg3d" path="res://loading/LoadingText.gd" id="5_lj67a"]
+[ext_resource type="Texture2D" uid="uid://ci3ijiohbjpq7" path="res://icons/Default.png" id="6_48gpj"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -21,16 +25,68 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_kfraa")
 
-[node name="LastPostMessage" type="RichTextLabel" parent="DebugContainer"]
+[node name="CurrentEmotion" type="RichTextLabel" parent="DebugContainer"]
 layout_mode = 0
 offset_right = 400.0
 offset_bottom = 100.0
 text = "Test Text"
-script = ExtResource("1_axi3y")
+script = ExtResource("3_28q7j")
 
-[node name="CurrentEmotion" type="RichTextLabel" parent="DebugContainer"]
+[node name="CurrentCharacter" type="RichTextLabel" parent="DebugContainer"]
+layout_mode = 0
 offset_top = 30.0
 offset_right = 400.0
 offset_bottom = 130.0
 text = "Test Text"
-script = ExtResource("3_28q7j")
+script = ExtResource("4_57cao")
+
+[node name="LastPostMessage" type="RichTextLabel" parent="DebugContainer"]
+layout_mode = 0
+offset_top = 60.0
+offset_right = 400.0
+offset_bottom = 160.0
+text = "Test Text"
+script = ExtResource("1_axi3y")
+
+[node name="Loading" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_1x61k")
+
+[node name="Center" type="Control" parent="Loading"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LoadingText" type="RichTextLabel" parent="Loading/Center"]
+layout_mode = 0
+offset_left = -150.0
+offset_top = 40.0
+offset_right = 150.0
+offset_bottom = 140.0
+bbcode_enabled = true
+text = "[font_size=48]Null
+[font_size=24]Calling ."
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_lj67a")
+
+[node name="TextureRect" type="TextureRect" parent="Loading/Center"]
+layout_mode = 0
+offset_left = -100.0
+offset_top = -160.0
+offset_right = 100.0
+offset_bottom = 40.0
+texture = ExtResource("6_48gpj")
+expand_mode = 2

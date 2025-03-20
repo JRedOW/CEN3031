@@ -15,9 +15,9 @@ func _ready() -> void:
 
 func on_message_received(event) -> void:
 	var js_event = event[0];
-	var message = js_event.data;
+	var message: String = js_event.data;
 	
-	last_message = message;
+	last_message = message.replace('\n', '').replace(' ','');
 	
 	parse_json_message();
 
@@ -47,6 +47,14 @@ func parse_json_message():
 		"debug":
 			print("Debug Mode: ", data_received["debug"])
 			update_debug.emit(data_received["debug"]);
+		"new_character":
+			var loader: Loading = get_node("/root/Control/Loading");
+			
+			loader.start_load(
+				data_received["character"], 
+				data_received["pack_path"],
+				data_received["scene_path"]
+			);
 		_:
 			print("An unknown command was sent");
 			

@@ -3,6 +3,9 @@
         onMessage = (msg: string) => {
             console.log('Character Engine recieved message: ' + msg);
         },
+        onReady = () => {
+            console.log('Character Engine is ready: ');
+        },
         debug = false
     } = $props();
 
@@ -12,6 +15,8 @@
 
             if (obj.command == 'ready') {
                 sendmessage(`{"command":"debug","debug":${debug ? 'true' : 'false'}}`);
+
+                onReady();
             }
         } catch {}
 
