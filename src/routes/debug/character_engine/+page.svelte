@@ -95,4 +95,16 @@
         align-items: center;
         gap: 5px;
     }
+
+    h1 {
+        padding: 10px;
+    }
+
+    button {
+        padding: 2px;
+    }
+
+    input {
+        padding: 2px;
+    }
 </style>
