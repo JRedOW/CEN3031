@@ -1,7 +1,5 @@
 <script lang="ts">
-    import type { PageProps } from './$types';
-
-    let { data }: PageProps = $props();
+    let { data } = $props();
 
     let user_id = data.user_id;
 
@@ -96,19 +94,19 @@
             <input type="text" id="email" name="email" bind:value={email} />
             <h4>Password:</h4>
             <input type="password" id="password" name="password" bind:value={password} />
-            <div style="width: 100%; margin-top: 1.33em;">
+            <div style="width: 100%; margin-top: 10px;">
                 <button onclick={login}>Login</button>
             </div>
-            <p style="width: 100%; margin-top: 1.33em; color: red;">{login_message}</p>
+            <p style="width: 100%; margin-top: 10px; color: red;">{login_message}</p>
         {/if}
     </div>
     <div style="flex-grow: 1; padding: 10px;">
         <h2>Logout:</h2>
         {#if user_id}
-            <div style="width: 100%; margin-top: 1.33em;">
+            <div style="width: 100%; margin-top: 10px;">
                 <button onclick={logout}>Logout</button>
             </div>
-            <p style="width: 100%; margin-top: 1.33em; color: red;">{logout_message}</p>
+            <p style="width: 100%; margin-top: 10px; color: red;">{logout_message}</p>
         {:else}
             <h4>Not Logged In</h4>
         {/if}
@@ -126,9 +124,30 @@
             name="login_new_account"
             bind:checked={login_new_account}
         />
-        <div style="width: 100%; margin-top: 1.33em;">
+        <div style="width: 100%; margin-top: 10px;">
             <button onclick={createUser}>Create User</button>
         </div>
-        <p style="width: 100%; margin-top: 1.33em; color: red;">{create_message}</p>
+        <p style="width: 100%; margin-top: 10px; color: red;">{create_message}</p>
     </div>
 </div>
+
+<style>
+    h2 {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    h4 {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    input {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    button {
+        padding: 3px;
+    }
+</style>
