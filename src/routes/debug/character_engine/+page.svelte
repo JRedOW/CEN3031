@@ -17,13 +17,13 @@
         character_engine.sendmessage(msg);
     };
 
-    let sendEmotion = (emotion: String) => {
+    let sendEmotion = (emotion: string) => {
         return () => {
             character_engine.sendmessage(`{"command":"new_emotion","emotion":"${emotion}"}`);
         };
     };
 
-    let sendCharacter = (character: String, path: String, scene_path: String) => {
+    let sendCharacter = (character: string, path: string, scene_path: string) => {
         return () => {
             character_engine.sendmessage(
                 `{

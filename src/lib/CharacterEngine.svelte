@@ -28,7 +28,9 @@
             } else if (obj.command == 'stopped') {
                 started = false;
             }
-        } catch {}
+        } catch {
+            console.log('Malformed Message Possibly Sent From Character Engine.');
+        }
 
         onMessage(event.data);
     };

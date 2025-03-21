@@ -1,7 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/state';
+    import type { PageProps } from './$types';
 
-    export const user_id = page.data.user_id;
+    let { data }: PageProps = $props();
+
+    let user_id = data.user_id;
 
     let email = $state('');
     let password = $state('');
