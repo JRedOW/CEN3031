@@ -13,7 +13,7 @@
     <div id="grid_header"></div>
 
     <div id="grid_side">
-        {#each links as link}
+        {#each links as link (link.url)}
             <a
                 style="text-decoration: none;color: {page.url.pathname === link.url
                     ? 'yellow'
