@@ -6,17 +6,27 @@
         onReady = () => {
             console.log('Character Engine is ready: ');
         },
-        debug = false
+        debug = false,
+        started = $bindable(false),
+        loaded = $bindable(false)
     } = $props();
 
     let onmessage = (event: MessageEvent) => {
         try {
             const obj = JSON.parse(event.data);
 
-            if (obj.command == 'ready') {
+            if (obj.command == 'loaded') {
+                loaded = true;
+            } else if (obj.command == 'loading') {
+                loaded = false;
+            } else if (obj.command == 'ready') {
                 sendmessage(`{"command":"debug","debug":${debug ? 'true' : 'false'}}`);
 
                 onReady();
+            } else if (obj.command == 'started') {
+                started = true;
+            } else if (obj.command == 'stopped') {
+                started = false;
             }
         } catch {}
 

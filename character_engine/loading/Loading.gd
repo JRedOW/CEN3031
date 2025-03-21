@@ -9,13 +9,15 @@ var character: Character;
 
 var visuals: Control;
 var client: HTTPRequest;
+var timer: Timer;
 
 func _ready():
 	visuals = get_node("Center");
 
-func start_load(char_name: String, pack_path: String, scene_path: String):
+func start_load(char_name: String, pack_path: String, scene_path: String, secs: float):
 	character_name = char_name;
 	character_scene_path = scene_path;
+	character_scene = null;
 	
 	var new_icon: CompressedTexture2D;
 	if (ResourceLoader.exists("res://icons/" + char_name + ".png")):
@@ -27,17 +29,26 @@ func start_load(char_name: String, pack_path: String, scene_path: String):
 	if (character):
 		character.queue_free();
 	
-	visuals.visible = true;
-	
 	if (client):
 		client.cancel_request();
 		client.queue_free();
+	
+	if (timer):
+		timer.queue_free();
+	
+	visuals.visible = true;
+	MessageManager.send_message('{"command":"loading","pack":"' + char_name + '"}');
 	
 	client = HTTPRequest.new();
 	client.connect('request_completed', self._request_completed);
 	add_child(client);
 	client.download_file = "res://" + character_name + ".pck";
 	client.request(pack_path);
+	
+	if (secs > 0.0):
+		timer = Timer.new();
+		add_child(timer);
+		timer.start(secs);
 
 func _request_completed(result, response_code, headers, body):
 	if result != HTTPRequest.RESULT_SUCCESS:
@@ -48,6 +59,23 @@ func _request_completed(result, response_code, headers, body):
 		return;
 	
 	client.queue_free();
+	
+	MessageManager.send_message('{"command":"loaded","pack":"' + character_name + '"}');
+	
+	wait_for_timer();
+
+func wait_for_timer():
+	var cached_character_name = character_name;
+	
+	if (timer):
+		var cached_timer = timer;
+		
+		await cached_timer.timeout;
+	
+	if (cached_character_name != character_name):
+		print("UHOH, Character Name Changed After Timer");
+		
+		return;
 	
 	load_character("res://" + character_name + ".pck");
 	

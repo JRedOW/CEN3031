@@ -2,9 +2,12 @@
     import CharacterEngine from '$lib/CharacterEngine.svelte';
 
     let msg = $state('');
+    let character_delay = $state(0.0);
 
     let character_engine: CharacterEngine;
     let ready = $state(false);
+    let loaded = $state(false);
+    let started = $state(false);
 
     let onReady = () => {
         ready = true;
@@ -27,7 +30,8 @@
                     "command":"new_character",
                     "character":"${character}",
                     "pack_path":"${window.location.origin}/${path}",
-                    "scene_path":"res://characters/${scene_path}"
+                    "scene_path":"res://characters/${scene_path}",
+                    "secs":${character_delay ?? 0.0}
                 }`
             );
         };
@@ -38,6 +42,10 @@
 
 <div class="row_container flex_row">
     <h3 style="margin: 0px">Ready: {ready ? 'Yes' : 'No'}</h3>
+    <h3 style="margin: 0px">|</h3>
+    <h3 style="margin: 0px">Loaded: {loaded ? 'Yes' : 'No'}</h3>
+    <h3 style="margin: 0px">|</h3>
+    <h3 style="margin: 0px">Started: {started ? 'Yes' : 'No'}</h3>
 </div>
 
 <div class="row_container flex_row">
@@ -60,10 +68,12 @@
             'testing_miku/TestingMiku.tscn'
         )}>Send Testing Miku</button
     >
+    <h3 style="margin: 0px">|</h3>
+    <input type="number" style="width: 30px" bind:value={character_delay} />
 </div>
 
 <div id="character_engine_container">
-    <CharacterEngine debug={true} {onReady} bind:this={character_engine} />
+    <CharacterEngine debug={true} {onReady} bind:this={character_engine} bind:loaded bind:started />
 </div>
 
 <style>

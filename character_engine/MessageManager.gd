@@ -53,7 +53,8 @@ func parse_json_message():
 			loader.start_load(
 				data_received["character"], 
 				data_received["pack_path"],
-				data_received["scene_path"]
+				data_received["scene_path"],
+				data_received["secs"]
 			);
 		_:
 			print("An unknown command was sent");
