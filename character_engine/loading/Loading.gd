@@ -11,7 +11,13 @@ var visuals: Control;
 var client: HTTPRequest;
 var timer: Timer;
 
+var random: RandomNumberGenerator;
+var latest_timer_number;
+
 func _ready():
+	random = RandomNumberGenerator.new();
+	random.randomize();
+	
 	visuals = get_node("Center");
 
 func start_load(char_name: String, pack_path: String, scene_path: String, secs: float):
@@ -32,9 +38,6 @@ func start_load(char_name: String, pack_path: String, scene_path: String, secs: 
 	if (client):
 		client.cancel_request();
 		client.queue_free();
-	
-	if (timer):
-		timer.queue_free();
 	
 	visuals.visible = true;
 	MessageManager.send_message('{"command":"loading","pack":"' + char_name + '"}');
@@ -65,15 +68,18 @@ func _request_completed(result, response_code, headers, body):
 	wait_for_timer();
 
 func wait_for_timer():
-	var cached_character_name = character_name;
+	var rand_number = random.randi(); # Hack to prevent overwrite race conds
+	latest_timer_number = rand_number;
 	
 	if (timer):
 		var cached_timer = timer;
 		
 		await cached_timer.timeout;
+		
+		timer.queue_free();
 	
-	if (cached_character_name != character_name):
-		print("UHOH, Character Name Changed After Timer");
+	if (latest_timer_number != rand_number):
+		print("UHOH, Timer is no Longer Latest");
 		
 		return;
 	
