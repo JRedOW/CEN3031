@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvra66vxlhr22"]
+
+[ext_resource type="Script" uid="uid://bslp3tycug3ld" path="res://characters/testing_miku/TestingMiku.gd" id="1_j58ju"]
+
+[node name="TestingMiku" type="Node2D"]
+script = ExtResource("1_j58ju")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_right = 200.0
+offset_bottom = 100.0
+bbcode_enabled = true
+text = "[font_size=48]MIKU"
+horizontal_alignment = 1
+vertical_alignment = 1

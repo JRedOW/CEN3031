@@ -10,5 +10,34 @@ if [ ! -f /home/node/.local/share/godot/export_templates/4.4.stable/web_nothread
     exit 1
 fi
 
-mkdir ../static/character_engine
+echo ""
+echo "====    BUILDING BASE ENGINE    ===="
+echo ""
+
+if [ ! -d "../static/character_engine" ]; then
+    mkdir ../static/character_engine
+fi
+if [ -d "../character_engine/.godot/" ]; then
+    rm -r ../character_engine/.godot/
+fi
 ./godot --path "../character_engine" --headless --export-release "Web" ../static/character_engine/character_engine.html
+
+echo ""
+echo "====    BUILDING CHARACTER PACKS    ===="
+
+if [ ! -d "../static/characters" ]; then
+    mkdir ../static/characters
+fi
+
+build_character_pack () {
+    echo ""
+    echo "====    BUILDING CHARACTER PACK '$1'    ===="
+    echo ""
+
+    if [ -d "../character_engine/.godot/" ]; then
+        rm -r ../character_engine/.godot/
+    fi
+    ./godot --path "../character_engine" --headless --export-pack "$1" "../static/characters/$2"
+}
+
+build_character_pack "Testing Miku" testing_miku.pck

@@ -2,10 +2,36 @@
     let {
         onMessage = (msg: string) => {
             console.log('Character Engine recieved message: ' + msg);
-        }
+        },
+        onReady = () => {
+            console.log('Character Engine is ready: ');
+        },
+        debug = false,
+        started = $bindable(false),
+        loaded = $bindable(false)
     } = $props();
 
     let onmessage = (event: MessageEvent) => {
+        try {
+            const obj = JSON.parse(event.data);
+
+            if (obj.command == 'loaded') {
+                loaded = true;
+            } else if (obj.command == 'loading') {
+                loaded = false;
+            } else if (obj.command == 'ready') {
+                sendmessage(`{"command":"debug","debug":${debug ? 'true' : 'false'}}`);
+
+                onReady();
+            } else if (obj.command == 'started') {
+                started = true;
+            } else if (obj.command == 'stopped') {
+                started = false;
+            }
+        } catch {
+            console.log('Malformed Message Possibly Sent From Character Engine.');
+        }
+
         onMessage(event.data);
     };
 
@@ -15,7 +41,9 @@
     };
 </script>
 
-<iframe src="/character_engine/character_engine.html" title="Character Engine" {onmessage}></iframe>
+<iframe src="/character_engine/character_engine.html" title="Character Engine"></iframe>
+
+<svelte:window {onmessage} />
 
 <style>
     iframe {
