@@ -50,10 +50,11 @@ func start_load(char_name: String, pack_path: String, scene_path: String, secs: 
 	
 	if (secs > 0.0):
 		timer = Timer.new();
+		timer.one_shot;
 		add_child(timer);
 		timer.start(secs);
 
-func _request_completed(result, response_code, headers, body):
+func _request_completed(result, _response_code, _headers, _body):
 	if result != HTTPRequest.RESULT_SUCCESS:
 		print("UHOH, HTTP ERROR " + str(result));
 		
@@ -67,14 +68,15 @@ func _request_completed(result, response_code, headers, body):
 	
 	wait_for_timer();
 
-func wait_for_timer():
+func wait_for_timer(): # TODO: Something seems wrong when slow to load, check it out
 	var rand_number = random.randi(); # Hack to prevent overwrite race conds
 	latest_timer_number = rand_number;
 	
 	if (timer):
 		var cached_timer = timer;
 		
-		await cached_timer.timeout;
+		if (timer.time_left != 0.0):
+			await cached_timer.timeout;
 		
 		timer.queue_free();
 	
