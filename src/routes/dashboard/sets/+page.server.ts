@@ -1,9 +1,16 @@
 import { db } from '$lib/server/db';
 import { study_set } from '$lib/server/db/schema.js';
 import { eq } from 'drizzle-orm';
+import type { PageServerLoad } from './$types';
 
-export async function load({ parent }) {
-    const { user_id } = await parent();
+export const load: PageServerLoad = async (event) => {
+    const { user_id } = event.locals;
+
+    if (!user_id) {
+        return {
+            sets: []
+        };
+    }
 
     const sets = await db
         .select()
@@ -14,4 +21,4 @@ export async function load({ parent }) {
     return {
         sets
     };
-}
+};

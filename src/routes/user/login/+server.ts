@@ -3,8 +3,9 @@ import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema.js';
 import { createSessionToken } from '$lib/server/session_token';
 import { eq } from 'drizzle-orm';
+import type { RequestHandler } from './$types';
 
-export async function POST({ request, cookies }) {
+export const POST: RequestHandler = async ({ request, cookies }) => {
     const { email, password_hash } = await request.json();
 
     const found_user = await db.select().from(user).where(eq(user.email, email));
@@ -28,4 +29,4 @@ export async function POST({ request, cookies }) {
     });
 
     return json({ id: found_user[0].id }, { status: 202 });
-}
+};

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     let { data } = $props();
 
     let flipped = $state(false);
@@ -27,8 +27,10 @@
             <h3>{data.set[0].set_data.questions[index].term}</h3>
         </div>
     </button>
-    <button onclick={decrement}>&lt;</button>
-    <button onclick={increment}>></button>
+    <div style="display: flex;flex-direction: row;gap: 1em;">
+        <button onclick={decrement}>&lt;</button>
+        <button onclick={increment}>></button>
+    </div>
 </div>
 
 <style>

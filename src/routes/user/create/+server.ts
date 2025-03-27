@@ -2,8 +2,9 @@ import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema.js';
 import { createSessionToken } from '$lib/server/session_token';
+import type { RequestHandler } from './$types';
 
-export async function POST({ request, cookies }) {
+export const POST: RequestHandler = async ({ request, cookies }) => {
     const { email, password_hash, login } = await request.json();
 
     const new_user = await db
@@ -31,4 +32,4 @@ export async function POST({ request, cookies }) {
     }
 
     return json({ id: new_user[0].id }, { status: 201 });
-}
+};

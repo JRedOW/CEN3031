@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { json } from '@sveltejs/kit';
     import type { Set } from '$lib/interfaces';
 
     let { data } = $props();
@@ -25,7 +24,6 @@
 
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
             create_message = 'Created Set ' + data.id;
         } else {
             console.error('Failed to create set');
@@ -33,6 +31,7 @@
         }
     };
 
+    /*
     let deleteSet = async () => {
         const response = await fetch('/sets/delete', {
             method: 'POST',
@@ -46,13 +45,13 @@
 
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
             create_message = 'Deleted Set ' + data.id;
         } else {
             console.error('Failed to create set');
             create_message = 'Failed to delete set';
         }
     };
+    */
 </script>
 
 <div style="padding:3em">
@@ -81,6 +80,10 @@
         >+</button
     >
 </div>
+
+{#if false}
+    <p>{create_message}</p>
+{/if}
 
 <style>
     Button {

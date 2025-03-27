@@ -24,7 +24,9 @@
 
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
+
+            console.log('Set saved: ', data);
+
             save_message = 'saved!';
         } else {
             console.error('Failed to create set');
@@ -47,8 +49,6 @@
 
         // setState = this_set;
     }
-
-    let success_message = $state('');
 </script>
 
 <div style="padding:3em">
@@ -65,7 +65,7 @@
                 bind:value={this_set.title}
                 style="font-size:x-large;margin-bottom:0.5em;font-family:Kavoon"
             />
-            {#each this_set.questions as q, _i (q.id)}
+            {#each this_set.questions as q (q.id)}
                 <div style="padding:0.2em">
                     <input
                         type="text"
@@ -111,13 +111,14 @@
 </div>
 
 <style>
-    Span {
+    span {
         background-color: White;
         border-radius: 8px;
         padding: 0.4em;
         min-width: 45%;
     }
-    Input {
+
+    input {
         font-family: ComicSans;
         color: var(--Rust);
         border: none;
@@ -127,7 +128,7 @@
         /* text-wrap: inherit; */
     }
 
-    Button {
+    button {
         font-family: Kavoon;
         font-size: xx-large;
         color: White;

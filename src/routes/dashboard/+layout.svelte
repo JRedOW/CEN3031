@@ -38,8 +38,6 @@
     </div>
 </div>
 
-<body style="background-color: var(--Cream)"> </body>
-
 <style>
     #grid_root {
         display: grid;
@@ -75,5 +73,9 @@
 
     a:hover.hoverable {
         color: var(--Cream) !important;
+    }
+
+    :global(body) {
+        background-color: var(--Cream);
     }
 </style>
