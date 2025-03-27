@@ -1,29 +1,35 @@
-<script>
+<script lang="ts">
     import { page } from '$app/state';
+    import '../styles/fonts.css';
+    import '../styles/colors.css';
     let { children } = $props();
 
     let links = [
         { url: '/dashboard', text: 'home' },
-        { url: '/dashboard/example', text: 'example' },
-        { url: '/dashboard/example2', text: 'example2' }
+        { url: '/dashboard/sets', text: 'sets' },
+        { url: '/dashboard/example2', text: 'example 2' }
     ];
 </script>
 
 <div id="grid_root">
-    <div id="grid_header"></div>
+    <div id="grid_header">
+        <p style="font-family:Kavoon;font-size:3em;color:white">StudyBuddy</p>
+    </div>
 
     <div id="grid_side">
         {#each links as link (link.url)}
             <a
                 style="text-decoration: none;color: {page.url.pathname === link.url
-                    ? 'yellow'
+                    ? 'var(--Honey)'
                     : 'white'};"
                 class={page.url.pathname === link.url ? '' : 'hoverable'}
                 href={link.url}
             >
-                <p style="font-size: 1.8em;font-weight: bold;">{link.text}</p>
+                <p style="font-family:Kavoon;font-size: 1.8em;font-weight: bold;">
+                    {link.text}
+                </p>
             </a>
-            <div style="height: 2px;width: 80%;background-color: orange;"></div>
+            <div style="height: 2px;width: 80%;background-color: var(--Pumpkin);"></div>
         {/each}
     </div>
 
@@ -47,12 +53,12 @@
 
     #grid_header {
         grid-area: header;
-        background-color: orange;
+        background-color: var(--Pumpkin);
     }
 
     #grid_side {
         grid-area: side;
-        background-color: brown;
+        background-color: var(--Rust);
 
         display: flex;
         flex-direction: column;
@@ -66,6 +72,10 @@
     }
 
     a:hover.hoverable {
-        color: bisque !important;
+        color: var(--Cream) !important;
+    }
+
+    :global(body) {
+        background-color: var(--Cream);
     }
 </style>
