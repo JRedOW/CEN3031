@@ -1,4 +1,5 @@
 import { integer, jsonb, pgTable, serial, varchar } from 'drizzle-orm/pg-core';
+import type { Set } from '../../interfaces';
 
 export const user = pgTable('user', {
     id: serial('id').primaryKey(),
@@ -11,7 +12,7 @@ export const study_set = pgTable('study_set', {
     owner_id: integer()
         .notNull()
         .references(() => user.id),
-    data: jsonb().notNull()
+    set_data: jsonb().$type<Set>().notNull()
 });
 
 export const set_results = pgTable('set_results', {

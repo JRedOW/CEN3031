@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Kavoon';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/fonts/Kavoon-Regular.ttf')
+}
+
+@font-face {
+    font-family: 'ComicSans';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/fonts/Comic Sans MS.ttf')
+}
