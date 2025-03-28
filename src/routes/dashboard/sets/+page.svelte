@@ -31,27 +31,34 @@
         }
     };
 
-    /*
     let deleteSet = async () => {
-        const response = await fetch('/sets/delete', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: this_set
-            })
-        });
+    const response = await fetch('/sets/delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: this_set // The ID of the set to delete
+        })
+    });
 
-        if (response.ok) {
-            const data = await response.json();
-            create_message = 'Deleted Set ' + data.id;
+    if (response.ok) {
+        const data = await response.json();
+        create_message = 'Deleted Set ' + data.id;
+    } else {
+        console.error('Failed to delete set');
+        
+        // Handle specific errors based on status code
+        if (response.status === 404) {
+            create_message = 'Set not found';
+        } else if (response.status === 500) {
+            create_message = 'Server error, could not delete set';
         } else {
-            console.error('Failed to create set');
             create_message = 'Failed to delete set';
         }
-    };
-    */
+    }
+};
+
 </script>
 
 <div style="padding:3em">
