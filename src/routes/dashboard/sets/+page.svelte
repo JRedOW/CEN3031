@@ -3,7 +3,6 @@
 
     let { data } = $props();
     let create_message = $state('');
-    // let currentSetId = $state(0);
 
     const this_set: Set = {
         title: 'My New Set (' + data.sets.length + ')',
@@ -31,34 +30,36 @@
         }
     };
 
-    let deleteSet = async () => {
-    const response = await fetch('/sets/delete', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id: this_set // The ID of the set to delete
-        })
-    });
+    let deleteSet = async (setId: number) => {
+        const response = await fetch('/sets/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: setId  // Send the correct set ID for deletion
+            })
+        });
 
-    if (response.ok) {
-        const data = await response.json();
-        create_message = 'Deleted Set ' + data.id;
-    } else {
-        console.error('Failed to delete set');
-        
-        // Handle specific errors based on status code
-        if (response.status === 404) {
-            create_message = 'Set not found';
-        } else if (response.status === 500) {
-            create_message = 'Server error, could not delete set';
+        if (response.ok) {
+            const data = await response.json();
+            create_message = 'Deleted Set ' + data.id;
+            
+            // Optionally, remove the deleted set from the UI immediately
+            data.sets = data.sets.filter((set: { id: number }) => set.id !== setId);
         } else {
-            create_message = 'Failed to delete set';
+            console.error('Failed to delete set');
+            
+            // Handle specific errors based on status code
+            if (response.status === 404) {
+                create_message = 'Set not found';
+            } else if (response.status === 500) {
+                create_message = 'Server error, could not delete set';
+            } else {
+                create_message = 'Failed to delete set';
+            }
         }
-    }
-};
-
+    };
 </script>
 
 <div style="padding:3em">
@@ -72,8 +73,9 @@
                         <h1>{set.set_data.title}</h1>
                         <a href="/dashboard/sets/{set.id}/view-set">view set</a>
                         <span>|</span>
-                        <a href="/dashboard/sets/{set.id}}/edit-set">edit set</a>
-                        <!-- <button onclick={}>delete</button> -->
+                        <a href="/dashboard/sets/{set.id}/edit-set">edit set</a>
+                        <!-- Delete Button -->
+                        <button onclick={() => deleteSet(set.id)} style="color: red; font-size: 16px;">Delete Set</button>
                     </li>
                 </div>
             {/each}
@@ -83,9 +85,7 @@
         </div>
     </ul>
 
-    <button onclick={createSet} style="padding:0.1em;padding-left:0.5em;padding-right:0.5em"
-        >+</button
-    >
+    <button onclick={createSet} style="padding:0.1em;padding-left:0.5em;padding-right:0.5em">+</button>
 </div>
 
 {#if false}
