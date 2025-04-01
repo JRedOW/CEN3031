@@ -75,7 +75,8 @@
                         <span>|</span>
                         <a href="/dashboard/sets/{set.id}/edit-set">edit set</a>
                         <span>|</span>
-                        <button onclick={() => deleteSet(set.id)} style="color: blue; background: none; border: none; text-decoration: underline; cursor: pointer;">Delete Set</button>
+                        <!-- Delete Button Styled Like the Other Links -->
+                        <button onclick={() => deleteSet(set.id)} style="color: blue; background: none; border: none; text-decoration: none; font-size: 16px; cursor: pointer;">delete set</button>
                     </li>
                 </div>
             {/each}
