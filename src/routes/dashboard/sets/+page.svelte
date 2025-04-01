@@ -74,8 +74,8 @@
                         <a href="/dashboard/sets/{set.id}/view-set">view set</a>
                         <span>|</span>
                         <a href="/dashboard/sets/{set.id}/edit-set">edit set</a>
-                        <!-- Delete Button -->
-                        <button onclick={() => deleteSet(set.id)} style="color: red; font-size: 16px;">Delete Set</button>
+                        <span>|</span>
+                        <button onclick={() => deleteSet(set.id)} style="color: blue; background: none; border: none; text-decoration: underline; cursor: pointer;">Delete Set</button>
                     </li>
                 </div>
             {/each}
@@ -129,5 +129,14 @@
         border-radius: 8px;
         color: var(--Mahogany);
         font-family: Kavoon;
+    }
+
+    a {
+        color: blue;
+        text-decoration: none;
+    }
+
+    span {
+        margin: 0 5px;
     }
 </style>

@@ -16,9 +16,6 @@
             </div>
         {/each}
     </div>
-    
-    <!-- Delete Set Button -->
-    <button onclick={() => deleteSet(data.set[0].id)} style="color: red; font-size: 16px;">Delete Set</button>
 </div>
 
 <style>
