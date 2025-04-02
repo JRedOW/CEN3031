@@ -9,15 +9,14 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const existingSet = await db.select().from(study_set).where(eq(study_set.id, id));
 
-    if (existingSet.length === 0){
+    if (existingSet.length === 0) {
         return json({ error: 'Set not found' }, { status: 404 });
     }
 
-    try{
+    try {
         await db.delete(study_set).where(eq(study_set.id, id));
-        return json({ id: id }, { status: 204 }); 
-    } 
-    catch (error){
+        return json({ id: id }, { status: 200 });
+    } catch (error) {
         console.error('Error deleting set:', error);
         return json({ error: 'Failed to delete set' }, { status: 500 });
     }

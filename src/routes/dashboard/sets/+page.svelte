@@ -37,19 +37,19 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                id: setId  // Send the correct set ID for deletion
+                id: setId // Send the correct set ID for deletion
             })
         });
 
         if (response.ok) {
             const data = await response.json();
             create_message = 'Deleted Set ' + data.id;
-            
+
             // Optionally, remove the deleted set from the UI immediately
             data.sets = data.sets.filter((set: { id: number }) => set.id !== setId);
         } else {
             console.error('Failed to delete set');
-            
+
             // Handle specific errors based on status code
             if (response.status === 404) {
                 create_message = 'Set not found';
@@ -76,7 +76,11 @@
                         <a href="/dashboard/sets/{set.id}/edit-set">edit set</a>
                         <span>|</span>
                         <!-- Delete Button Styled Like the Other Links -->
-                        <button onclick={() => deleteSet(set.id)} style="color: blue; background: none; border: none; text-decoration: none; font-size: 16px; cursor: pointer;">delete set</button>
+                        <button
+                            onclick={() => deleteSet(set.id)}
+                            style="color: blue; background: none; border: none; text-decoration: none; font-size: 16px; cursor: pointer;"
+                            >delete set</button
+                        >
                     </li>
                 </div>
             {/each}
@@ -86,7 +90,9 @@
         </div>
     </ul>
 
-    <button onclick={createSet} style="padding:0.1em;padding-left:0.5em;padding-right:0.5em">+</button>
+    <button onclick={createSet} style="padding:0.1em;padding-left:0.5em;padding-right:0.5em"
+        >+</button
+    >
 </div>
 
 {#if false}
