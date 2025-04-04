@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { json, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { study_set } from '$lib/server/db/schema.js';
 import { and, eq } from 'drizzle-orm';
@@ -11,12 +11,20 @@ export const load: PageServerLoad = async (event) => {
         return redirect(307, '/dashboard/sets');
     }
 
-    const sets = await db
-        .select()
-        .from(study_set)
-        .where(and(eq(study_set.id, parseInt(event.params.slug)), eq(study_set.owner_id, user_id)));
+    let sets;
 
-    if (sets.length == 0) redirect(307, '/dashboard/sets');
+    try {
+        sets = await db
+            .select()
+            .from(study_set)
+            .where(
+                and(eq(study_set.id, parseInt(event.params.slug)), eq(study_set.owner_id, user_id))
+            );
+    } catch (error) {
+        return json({ error: `Failed to load set: ${error}` }, { status: 500 });
+    }
+
+    if (sets.length == 0) return redirect(307, '/dashboard/sets');
 
     return {
         set: sets[0]
