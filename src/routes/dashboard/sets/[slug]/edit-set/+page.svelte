@@ -3,9 +3,9 @@
     let { data } = $props();
 
     let this_set: Set = $state({
-        title: data.set[0].set_data.title,
-        questions: data.set[0].set_data.questions,
-        last_question_id: data.set[0].set_data.last_question_id
+        title: data.set.set_data.title,
+        questions: data.set.set_data.questions,
+        last_question_id: data.set.set_data.last_question_id
     });
 
     let save_message = $state('');
@@ -17,7 +17,7 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                id: data.set[0].id,
+                id: data.set.id,
                 set_data: this_set
             })
         });
@@ -29,7 +29,7 @@
 
             save_message = 'saved!';
         } else {
-            console.error('Failed to create set');
+            console.error('Failed to save set');
             save_message = 'not saved';
         }
     };

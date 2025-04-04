@@ -1,30 +1,13 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { study_set } from '$lib/server/db/schema.js';
-import { verifySessionToken } from '$lib/server/session_token';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-    let owner_id = 0;
+export const POST: RequestHandler = async ({ locals, request }) => {
+    const owner_id = locals.user_id!;
 
-    if (cookies.get('session_token')) {
-        const raw_token = cookies.get('session_token');
-
-        try {
-            const { payload } = await verifySessionToken(raw_token!);
-
-            const exp = (payload.exp ?? 0) * 1000;
-
-            if (exp < Date.now()) {
-                return json({ error: 'Not authenticated' }, { status: 404 });
-            }
-
-            owner_id = Number(payload.sub);
-        } catch {
-            return json({ error: 'Not authenticated' }, { status: 404 });
-        }
-    } else {
-        return json({ error: 'Not authenticated' }, { status: 404 });
+    if (!owner_id) {
+        throw json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const { set_data } = await request.json();
@@ -35,11 +18,15 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             owner_id,
             set_data
         })
-        .returning({ id: study_set.id });
+        .returning({
+            id: study_set.id,
+            owner_id: study_set.owner_id,
+            set_data: study_set.set_data
+        });
 
     if (new_study_set.length === 0) {
-        return json({ error: 'Failed to create set' }, { status: 500 });
+        throw json({ error: 'Failed to create set' }, { status: 500 });
     }
 
-    return json({ id: new_study_set[0] }, { status: 201 });
+    return json({ new_set: new_study_set[0] }, { status: 201 });
 };

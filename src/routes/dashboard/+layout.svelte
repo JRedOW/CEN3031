@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import '../styles/fonts.css';
-    import '../styles/colors.css';
+    import '$lib/styles/fonts.css';
+    import '$lib/styles/colors.css';
     let { children } = $props();
 
     let links = [
