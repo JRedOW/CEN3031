@@ -5,26 +5,26 @@
     let index = $state(0);
 
     function increment() {
-        index = (index + 1) % data.set[0].set_data.questions.length;
+        index = (index + 1) % data.set.set_data.questions.length;
         flipped = false;
     }
     function decrement() {
-        index = (index - 1) % data.set[0].set_data.questions.length;
+        index = (index - 1) % data.set.set_data.questions.length;
         if (index == -1) {
-            index = data.set[0].set_data.questions.length - 1;
+            index = data.set.set_data.questions.length - 1;
         }
         flipped = false;
     }
 </script>
 
 <div class="container">
-    <a href="/dashboard/sets/{data.set[0].id}/view-set">view set</a>
+    <a href="/dashboard/sets/{data.set.id}/view-set">view set</a>
     <button class={['card', { flipped }]} onclick={() => (flipped = !flipped)}>
         <div class="front">
-            <h3>{data.set[0].set_data.questions[index].definition}</h3>
+            <h3>{data.set.set_data.questions[index].definition}</h3>
         </div>
         <div class="back">
-            <h3>{data.set[0].set_data.questions[index].term}</h3>
+            <h3>{data.set.set_data.questions[index].term}</h3>
         </div>
     </button>
     <div style="display: flex;flex-direction: row;gap: 1em;">

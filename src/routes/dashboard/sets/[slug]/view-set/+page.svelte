@@ -3,13 +3,13 @@
 </script>
 
 <div style="padding-left:3em;padding-top:3em">
-    <p>{data.set[0].id}</p>
+    <p>{data.set.id}</p>
     <a href="/dashboard/sets">my sets</a>
-    <a href="/dashboard/sets/{data.set[0].id}/view-set/study-set">study</a>
+    <a href="/dashboard/sets/{data.set.id}/view-set/study-set">study</a>
 
     <h1 style="font-family:Kavoon">View Set</h1>
     <div>
-        {#each data.set[0].set_data.questions as q (q.id)}
+        {#each data.set.set_data.questions as q (q.id)}
             <div class="container" style="min-width:80%">
                 <div style="margin-right:1em;float:left">{q.term}</div>
                 <div style="float:right">{q.definition}</div>

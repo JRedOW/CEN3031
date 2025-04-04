@@ -1,18 +1,24 @@
-import { error } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { study_set } from '$lib/server/db/schema.js';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
-    const set = await db
+    const { user_id } = event.locals;
+
+    if (!user_id) {
+        return redirect(307, '/dashboard/sets');
+    }
+
+    const sets = await db
         .select()
         .from(study_set)
-        .where(eq(study_set.id, parseInt(event.params.slug)));
+        .where(and(eq(study_set.id, parseInt(event.params.slug)), eq(study_set.owner_id, user_id)));
 
-    if (!set) error(404);
+    if (sets.length == 0) redirect(307, '/dashboard/sets');
 
     return {
-        set
+        set: sets[0]
     };
 };
