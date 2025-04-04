@@ -12,8 +12,7 @@
                 "esbenp.prettier-vscode",
                 "ms-azuretools.vscode-docker",
                 "mtxr.sqltools",
-                "mtxr.sqltools-driver-pg",
-                "rangav.vscode-thunder-client"
+                "mtxr.sqltools-driver-pg"
             ]
         }
     },
