@@ -11,11 +11,11 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     const found_user = await db.select().from(user).where(eq(user.email, email));
 
     if (found_user.length === 0) {
-        return json({}, { status: 401 });
+        throw json({}, { status: 401 });
     }
 
     if (found_user[0].password_hash !== password_hash) {
-        return json({}, { status: 401 });
+        throw json({}, { status: 401 });
     }
 
     const new_token = await createSessionToken(found_user[0].id);

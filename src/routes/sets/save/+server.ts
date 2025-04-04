@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     const owner_id = locals.user_id!;
 
     if (!owner_id) {
-        return json({ error: 'Not authenticated' }, { status: 401 });
+        throw json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const { id, set_data } = await request.json();
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         .returning({ editedIds: study_set.id });
 
     if (editedSets.length === 0) {
-        return json({ error: 'Failed to save set' }, { status: 500 });
+        throw json({ error: 'Failed to save set' }, { status: 500 });
     }
 
     return json({ id: id }, { status: 202 });

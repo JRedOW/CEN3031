@@ -7,7 +7,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     const owner_id = locals.user_id!;
 
     if (!owner_id) {
-        return json({ error: 'Not authenticated' }, { status: 401 });
+        throw json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const { set_data } = await request.json();
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         });
 
     if (new_study_set.length === 0) {
-        return json({ error: 'Failed to create set' }, { status: 500 });
+        throw json({ error: 'Failed to create set' }, { status: 500 });
     }
 
     return json({ new_set: new_study_set[0] }, { status: 201 });

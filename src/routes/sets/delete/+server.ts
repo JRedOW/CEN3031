@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     const owner_id = locals.user_id!;
 
     if (!owner_id) {
-        return json({ error: 'Not authenticated' }, { status: 401 });
+        throw json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const { id } = await request.json();
@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         .returning({ deletedId: study_set.id });
 
     if (deletedSets.length === 0) {
-        return json({ error: 'Set not found' }, { status: 404 });
+        throw json({ error: 'Set not found' }, { status: 404 });
     }
 
     return json({ id: id }, { status: 200 });

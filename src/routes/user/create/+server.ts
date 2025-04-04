@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         .returning({ id: user.id });
 
     if (new_user.length === 0) {
-        return json({ error: 'Failed to create user' }, { status: 500 });
+        throw json({ error: 'Failed to create user' }, { status: 500 });
     }
 
     if (login) {
