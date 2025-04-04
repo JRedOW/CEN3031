@@ -18,11 +18,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             owner_id,
             set_data
         })
-        .returning({ id: study_set.id });
+        .returning({
+            id: study_set.id,
+            owner_id: study_set.owner_id,
+            set_data: study_set.set_data
+        });
 
     if (new_study_set.length === 0) {
         return json({ error: 'Failed to create set' }, { status: 500 });
     }
 
-    return json({ id: new_study_set[0] }, { status: 201 });
+    return json({ new_set: new_study_set[0] }, { status: 201 });
 };

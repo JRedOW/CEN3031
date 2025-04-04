@@ -3,27 +3,34 @@
 
     let { data } = $props();
     let create_message = $state('');
+    let sets = $state(data.sets);
 
-    const this_set: Set = {
-        title: 'My New Set (' + data.sets.length + ')',
-        questions: [],
-        last_question_id: 0
+    const default_set = (): Set => {
+        return {
+            title: 'My New Set (' + sets.length + ')',
+            questions: [],
+            last_question_id: 0
+        };
     };
 
     let createSet = async () => {
+        const new_set = default_set();
+
         const response = await fetch('/sets/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                set_data: this_set
+                set_data: new_set
             })
         });
 
         if (response.ok) {
-            const data = await response.json();
-            create_message = 'Created Set ' + data.id;
+            const response_json = await response.json();
+            create_message = 'Created Set ' + response_json.new_set.id;
+
+            sets.push(response_json.new_set);
         } else {
             console.error('Failed to create set');
             create_message = 'Failed to create set';
@@ -42,11 +49,10 @@
         });
 
         if (response.ok) {
-            const data = await response.json();
-            create_message = 'Deleted Set ' + data.id;
+            const response_json = await response.json();
+            create_message = 'Deleted Set ' + response_json.id;
 
-            // Optionally, remove the deleted set from the UI immediately
-            data.sets = data.sets.filter((set: { id: number }) => set.id !== setId);
+            sets = sets.filter((set: { id: number }) => set.id !== setId);
         } else {
             console.error('Failed to delete set');
 
@@ -67,7 +73,7 @@
 
     <ul style="list-style-type:none">
         <div>
-            {#each data.sets as set (set.id)}
+            {#each sets as set (set.id)}
                 <div class="container">
                     <li>
                         <h1>{set.set_data.title}</h1>
@@ -84,7 +90,7 @@
                     </li>
                 </div>
             {/each}
-            {#if data.sets.length === 0}
+            {#if sets.length === 0}
                 <h2 style="text-align:center">you have no sets! Create one</h2>
             {/if}
         </div>
