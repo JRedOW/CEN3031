@@ -24,9 +24,7 @@
 
         if (response.ok) {
             const data = await response.json();
-
             console.log('Set saved: ', data);
-
             save_message = 'saved!';
         } else {
             console.error('Failed to save set');
@@ -35,19 +33,23 @@
     };
 
     function incrementTerms() {
+        const newId = this_set.last_question_id + 1;
         this_set.questions.push({
             term: '',
             definition: '',
-            id: this_set.questions.length
+            id: newId
         });
-        this_set.last_question_id = this_set.questions.length;
+        this_set.last_question_id = newId;
     }
 
     function decrementTerms() {
         this_set.questions.pop();
         this_set.last_question_id = this_set.questions.length;
+    }
 
-        // setState = this_set;
+    function deleteQuestion(questionId: number) {
+        this_set.questions = this_set.questions.filter(q => q.id !== questionId);
+
     }
 </script>
 
@@ -73,6 +75,7 @@
                         name="term"
                         placeholder="Type term here"
                         bind:value={q.term}
+                        style="font-family:ComicSans; padding:0.4em; border-radius:8px; border:none; min-width:45%;"
                     />
                     <input
                         type="text"
@@ -80,7 +83,14 @@
                         name="definition"
                         placeholder="Type definition here"
                         bind:value={q.definition}
+                        style="font-family:ComicSans; padding:0.4em; border-radius:8px; border:none; min-width:45%;"
                     />
+                    <!-- Delete button for each question -->
+                    <button
+                        onclick={() => deleteQuestion(q.id)}
+                        style="font-family:Kavoon; font-size:medium; color:White; background-color:var(--Pumpkin); border-radius:8px; border:none; padding:0.3em; margin-left:0.5em; cursor:pointer;">
+                        delete
+                    </button>
                 </div>
             {/each}
 
@@ -91,21 +101,14 @@
             <div style="padding:3em;margin:auto">
                 <button
                     onclick={incrementTerms}
-                    style="font-family:Kavoon;font-size:xx-large;color:White;background-color:var(--Pumpkin);padding:0.1em;padding-left:0.5em;padding-right:0.5em;border:none"
-                    >+</button
-                >
-                <button
-                    onclick={decrementTerms}
-                    style="font-family:Kavoon;font-size:xx-large;color:White;background-color:var(--Pumpkin);padding:0.1em;padding-left:0.5em;padding-right:0.5em;border:none"
-                    >-</button
-                >
+                    style="font-family:Kavoon; font-size:xx-large; color:White; background-color:var(--Pumpkin); padding:0.1em 0.5em; border:none; cursor:pointer;"
+                    >+</button>
             </div>
         </div>
         <button
             onclick={saveSet}
-            style="font-family:Kavoon;font-size:xx-large;color:White;background-color:var(--Pumpkin);padding:0.1em;padding-left:0.5em;padding-right:0.5em;border:none"
-            >Save</button
-        >
+            style="font-family:Kavoon; font-size:xx-large; color:White; background-color:var(--Pumpkin); padding:0.1em 0.5em; border:none; cursor:pointer;"
+            >Save</button>
         <p>{save_message}</p>
     </div>
 </div>
@@ -124,8 +127,6 @@
         border: none;
         padding: 0.4em;
         border-radius: 8px;
-        min-width: 45%;
-        /* text-wrap: inherit; */
     }
 
     button {
@@ -153,7 +154,6 @@
     }
 
     ::-ms-input-placeholder {
-        /* Edge 12 -18 */
         color: var(--Intangible);
     }
 </style>
