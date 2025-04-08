@@ -42,14 +42,8 @@
         this_set.last_question_id = newId;
     }
 
-    function decrementTerms() {
-        this_set.questions.pop();
-        this_set.last_question_id = this_set.questions.length;
-    }
-
     function deleteQuestion(questionId: number) {
-        this_set.questions = this_set.questions.filter(q => q.id !== questionId);
-
+        this_set.questions = this_set.questions.filter((q) => q.id !== questionId);
     }
 </script>
 
@@ -88,7 +82,8 @@
                     <!-- Delete button for each question -->
                     <button
                         onclick={() => deleteQuestion(q.id)}
-                        style="font-family:Kavoon; font-size:medium; color:White; background-color:var(--Pumpkin); border-radius:8px; border:none; padding:0.3em; margin-left:0.5em; cursor:pointer;">
+                        style="font-family:Kavoon; font-size:medium; color:White; background-color:var(--Pumpkin); border-radius:8px; border:none; padding:0.3em; margin-left:0.5em; cursor:pointer;"
+                    >
                         delete
                     </button>
                 </div>
@@ -102,13 +97,15 @@
                 <button
                     onclick={incrementTerms}
                     style="font-family:Kavoon; font-size:xx-large; color:White; background-color:var(--Pumpkin); padding:0.1em 0.5em; border:none; cursor:pointer;"
-                    >+</button>
+                    >+</button
+                >
             </div>
         </div>
         <button
             onclick={saveSet}
             style="font-family:Kavoon; font-size:xx-large; color:White; background-color:var(--Pumpkin); padding:0.1em 0.5em; border:none; cursor:pointer;"
-            >Save</button>
+            >Save</button
+        >
         <p>{save_message}</p>
     </div>
 </div>
