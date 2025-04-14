@@ -1,25 +1,44 @@
 <script lang="ts">
+    import { setContext } from 'svelte';
+    import TypeAnswer from './components/TypeAnswer.svelte';
+
     let { data } = $props();
     const originalQuestions = data?.set?.set_data?.questions ?? [];
     let studyQuestions = $state([...originalQuestions]);
 
+    // which question type
     let shuffleOption = $state(false);
     let switchQAOption = $state(false);
     let multipleChoiceMode = $state(false);
     let matchCardsMode = $state(false);
+    let flashcardMode = $state(false);
+    let typeAnswerMode = $state(false);
+
+    // questions
+    let currentQuestion = $state({ question: data.set.set_data.questions[0], type: 0 });
+    let correct = $state(false);
+
+    // for flashcards
     let flipped = $state(false);
+    // for match cards
+    let matchedPairs = $state<{ question: string; answer: string }[]>([]);
+    // for type answer
+    let typeAnswerComponent: TypeAnswer;
+
+    // track data
+    let answeredCorrectly = new Set<number>();
+    let selectedQuestion: string | null = null;
+    let selectedAnswer: string | null = null;
+
     let index = $state(0);
     let feedbackMessage = $state('');
-    let answeredCorrectly = new Set<number>();
     let completed = $state(false);
     let autoAdvanceTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    let selectedQuestion: string | null = null;
-    let selectedAnswer: string | null = null;
-    let matchedPairs = $state<{ question: string; answer: string }[]>([]);
-
     let randomizedQuestions = $state<string[]>([]);
     let randomizedAnswers = $state<string[]>([]);
+
+    let randomizeType = $state(false);
 
     function shuffleArray<T>(arr: Array<T>): Array<T> {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -38,12 +57,19 @@
 
     function handleSwitchQAChange() {
         flipped = switchQAOption;
+        if (switchQAOption) {
+            currentQuestion.type = 0;
+        } else {
+            currentQuestion.type = 1;
+        }
         feedbackMessage = '';
     }
 
     function toggleFlipMode() {
+        flashcardMode = true;
         multipleChoiceMode = false;
         matchCardsMode = false;
+        typeAnswerMode = false;
         flipped = false;
         feedbackMessage = '';
     }
@@ -51,6 +77,8 @@
     function toggleMultipleChoice() {
         multipleChoiceMode = true;
         matchCardsMode = false;
+        typeAnswerMode = false;
+        flashcardMode = false;
         flipped = false;
         feedbackMessage = '';
     }
@@ -58,12 +86,42 @@
     function toggleMatchMode() {
         matchCardsMode = true;
         multipleChoiceMode = false;
+        typeAnswerMode = false;
+        flashcardMode = false;
         flipped = false;
         feedbackMessage = '';
         resetMatchCards();
     }
 
+    function toggleTypeAnswer() {
+        typeAnswerMode = true;
+        multipleChoiceMode = false;
+        matchCardsMode = false;
+        flashcardMode = false;
+        flipped = false;
+        feedbackMessage = '';
+    }
+
     function increment() {
+        if (typeAnswerMode) {
+            if (correct) {
+                data.set.set_data.questions[index].correct++;
+            } else {
+                data.set.set_data.questions[index].incorrect++;
+            }
+        }
+        if (randomizeType) {
+            let randInt = Math.floor(Math.random() * 4);
+            if (randInt == 0) {
+                toggleFlipMode();
+            } else if (randInt == 1) {
+                toggleMatchMode();
+            } else if (randInt == 2) {
+                toggleMultipleChoice();
+            } else {
+                toggleTypeAnswer();
+            }
+        }
         if (studyQuestions.length === 0) return;
         let nextIndex = (index + 1) % studyQuestions.length;
         if (answeredCorrectly.size === studyQuestions.length) {
@@ -80,21 +138,13 @@
             clearTimeout(autoAdvanceTimeout);
             autoAdvanceTimeout = null;
         }
-    }
+        // currentQuestion.question = studyQuestions[index];
+        currentQuestion = {
+            question: studyQuestions[index],
+            type: switchQAOption ? 0 : 1
+        };
 
-    function decrement() {
-        if (studyQuestions.length === 0) return;
-        let prevIndex = (index - 1 + studyQuestions.length) % studyQuestions.length;
-        while (answeredCorrectly.has(prevIndex)) {
-            prevIndex = (prevIndex - 1 + studyQuestions.length) % studyQuestions.length;
-        }
-        index = prevIndex;
-        flipped = switchQAOption;
-        feedbackMessage = '';
-        if (autoAdvanceTimeout) {
-            clearTimeout(autoAdvanceTimeout);
-            autoAdvanceTimeout = null;
-        }
+        typeAnswerComponent.reset();
     }
 
     function getMultipleChoiceAnswers(idx: number) {
@@ -122,6 +172,7 @@
         if (choice === correct) {
             feedbackMessage = 'Correct!';
             answeredCorrectly.add(index);
+            data.set.set_data.questions[index].correct++;
             if (answeredCorrectly.size === studyQuestions.length) {
                 autoAdvanceTimeout = setTimeout(() => (completed = true), 1000);
             } else {
@@ -129,6 +180,7 @@
             }
         } else {
             feedbackMessage = `Incorrect. The correct answer is: ${correct}`;
+            data.set.set_data.questions[index].incorrect++;
         }
     }
 
@@ -157,7 +209,8 @@
     function getCurrentModeLabel() {
         if (multipleChoiceMode) return 'Multiple Choice Mode';
         if (matchCardsMode) return 'Match Cards Mode';
-        return 'Flip Mode';
+        if (typeAnswerMode) return 'Type Answer Mode';
+        return 'Flashcard Mode';
     }
 
     function handleMatchSelection(type: 'question' | 'answer', value: string) {
@@ -188,6 +241,7 @@
             completed = true;
         }
     }
+    // setContext('currentQuestion', currentQuestion);
 </script>
 
 <div style="display: flex; justify-content: space-between; padding: 1em;">
@@ -202,7 +256,10 @@
             {#if !matchCardsMode}
                 <button onclick={toggleMatchMode}>Match Cards Mode</button>
             {/if}
-            {#if multipleChoiceMode || matchCardsMode}
+            {#if !typeAnswerMode}
+                <button onclick={toggleTypeAnswer}>Type Answer Mode</button>
+            {/if}
+            {#if !flashcardMode}
                 <button onclick={toggleFlipMode}>Flip Mode</button>
             {/if}
         </div>
@@ -215,6 +272,10 @@
         <label style="font-family: Kavoon; color: var(--Mahogany);">
             <input type="checkbox" bind:checked={switchQAOption} onchange={handleSwitchQAChange} />
             Switch Question/Answer
+        </label>
+        <label style="font-family: Kavoon; color: var(--Mahogany);">
+            <input type="checkbox" bind:checked={randomizeType} onchange={handleShuffleChange} />
+            Randomize Format
         </label>
     </div>
 </div>
@@ -248,7 +309,7 @@
             <p class="feedback">{feedbackMessage}</p>
         {/if}
         <div style="display: flex; gap: 1em;">
-            <button onclick={decrement}>&lt;</button>
+            <!-- <button onclick={decrement}>&lt;</button> -->
             <button onclick={increment}>&gt;</button>
         </div>
     {:else if matchCardsMode}
@@ -282,6 +343,16 @@
         {#if feedbackMessage}
             <p class="feedback">{feedbackMessage}</p>
         {/if}
+        <div style="display: flex; gap: 1em;">
+            <button onclick={increment}>&gt;</button>
+        </div>
+    {:else if typeAnswerMode}
+        {currentQuestion.question.term} : {currentQuestion.question.definition}
+        <TypeAnswer bind:this={typeAnswerComponent} bind:currentQuestion bind:correct />
+        <div style="display: flex; gap: 1em;">
+            <!-- <button onclick={decrement}>&lt;</button> -->
+            <button onclick={increment}>&gt;</button>
+        </div>
     {:else}
         <button class={['card', { flipped }]} onclick={() => (flipped = !flipped)}>
             <div class="front">
@@ -304,7 +375,7 @@
             </div>
         </button>
         <div style="display: flex; gap: 1em;">
-            <button onclick={decrement}>&lt;</button>
+            <!-- <button onclick={decrement}>&lt;</button> -->
             <button onclick={increment}>&gt;</button>
         </div>
     {/if}

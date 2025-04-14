@@ -34,11 +34,15 @@
 
     function incrementTerms() {
         const newId = this_set.last_question_id + 1;
+        const newId = this_set.last_question_id + 1;
         this_set.questions.push({
             term: '',
             definition: '',
-            id: newId
+            id: newId,
+            correct: 0,
+            incorrect: 0
         });
+        this_set.last_question_id = newId;
         this_set.last_question_id = newId;
     }
 
