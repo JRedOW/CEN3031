@@ -3,8 +3,8 @@
     const originalQuestions = data?.set?.set_data?.questions ?? [];
     let studyQuestions = $state([...originalQuestions]);
 
-    let shuffleOption = false;
-    let switchQAOption = false;
+    let shuffleOption = $state(false);
+    let switchQAOption = $state(false);
     let multipleChoiceMode = $state(false);
     let matchCardsMode = $state(false);
     let flipped = $state(false);
@@ -21,7 +21,7 @@
     let randomizedQuestions = $state<string[]>([]);
     let randomizedAnswers = $state<string[]>([]);
 
-    function shuffleArray(arr: any[]): any[] {
+    function shuffleArray<T>(arr: Array<T>): Array<T> {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -30,7 +30,9 @@
     }
 
     function handleShuffleChange() {
-        studyQuestions = shuffleOption ? shuffleArray([...originalQuestions]) : [...originalQuestions];
+        studyQuestions = shuffleOption
+            ? shuffleArray([...originalQuestions])
+            : [...originalQuestions];
         resetSession();
     }
 
@@ -97,22 +99,31 @@
 
     function getMultipleChoiceAnswers(idx: number) {
         const correct = studyQuestions[idx];
-        const all = originalQuestions.filter((q) =>
-            (switchQAOption ? q.term : q.definition) !== (switchQAOption ? correct.term : correct.definition)
+        const all = originalQuestions.filter(
+            (q) =>
+                (switchQAOption ? q.term : q.definition) !==
+                (switchQAOption ? correct.term : correct.definition)
         );
-        const randomThree = shuffleArray(all).slice(0, 3).map((q) => switchQAOption ? q.term : q.definition);
-        const allChoices = shuffleArray([switchQAOption ? correct.term : correct.definition, ...randomThree]);
+        const randomThree = shuffleArray(all)
+            .slice(0, 3)
+            .map((q) => (switchQAOption ? q.term : q.definition));
+        const allChoices = shuffleArray([
+            switchQAOption ? correct.term : correct.definition,
+            ...randomThree
+        ]);
         return allChoices;
     }
 
     function checkAnswer(choice: string) {
-        const correct = switchQAOption ? studyQuestions[index].term : studyQuestions[index].definition;
+        const correct = switchQAOption
+            ? studyQuestions[index].term
+            : studyQuestions[index].definition;
 
         if (choice === correct) {
             feedbackMessage = 'Correct!';
             answeredCorrectly.add(index);
             if (answeredCorrectly.size === studyQuestions.length) {
-                autoAdvanceTimeout = setTimeout(() => completed = true, 1000);
+                autoAdvanceTimeout = setTimeout(() => (completed = true), 1000);
             } else {
                 autoAdvanceTimeout = setTimeout(() => increment(), 2000);
             }
@@ -130,15 +141,17 @@
         matchedPairs = [];
         selectedQuestion = null;
         selectedAnswer = null;
-        studyQuestions = shuffleOption ? shuffleArray([...originalQuestions]) : [...originalQuestions];
+        studyQuestions = shuffleOption
+            ? shuffleArray([...originalQuestions])
+            : [...originalQuestions];
     }
 
     function resetMatchCards() {
         matchedPairs = [];
         selectedQuestion = null;
         selectedAnswer = null;
-        randomizedQuestions = shuffleArray([...studyQuestions.map(q => q.term)]);
-        randomizedAnswers = shuffleArray([...studyQuestions.map(q => q.definition)]);
+        randomizedQuestions = shuffleArray([...studyQuestions.map((q) => q.term)]);
+        randomizedAnswers = shuffleArray([...studyQuestions.map((q) => q.definition)]);
     }
 
     function getCurrentModeLabel() {
@@ -156,13 +169,16 @@
 
         if (selectedQuestion && selectedAnswer) {
             const match = studyQuestions.find(
-                q => q.term === selectedQuestion && q.definition === selectedAnswer
+                (q) => q.term === selectedQuestion && q.definition === selectedAnswer
             );
             if (match) {
-                matchedPairs = [...matchedPairs, { question: selectedQuestion, answer: selectedAnswer }];
-                feedbackMessage = "Correct!";
+                matchedPairs = [
+                    ...matchedPairs,
+                    { question: selectedQuestion, answer: selectedAnswer }
+                ];
+                feedbackMessage = 'Correct!';
             } else {
-                feedbackMessage = "Incorrect! Try again.";
+                feedbackMessage = 'Incorrect! Try again.';
             }
             selectedQuestion = null;
             selectedAnswer = null;
@@ -181,23 +197,23 @@
         </h1>
         <div style="display: flex; gap: 0.5em;">
             {#if !multipleChoiceMode}
-                <button on:click={toggleMultipleChoice}>Multiple Choice Mode</button>
+                <button onclick={toggleMultipleChoice}>Multiple Choice Mode</button>
             {/if}
             {#if !matchCardsMode}
-                <button on:click={toggleMatchMode}>Match Cards Mode</button>
+                <button onclick={toggleMatchMode}>Match Cards Mode</button>
             {/if}
             {#if multipleChoiceMode || matchCardsMode}
-                <button on:click={toggleFlipMode}>Flip Mode</button>
+                <button onclick={toggleFlipMode}>Flip Mode</button>
             {/if}
         </div>
     </div>
     <div style="display: flex; gap: 1em;">
         <label style="font-family: Kavoon; color: var(--Mahogany);">
-            <input type="checkbox" bind:checked={shuffleOption} on:change={handleShuffleChange} />
+            <input type="checkbox" bind:checked={shuffleOption} onchange={handleShuffleChange} />
             Randomize
         </label>
         <label style="font-family: Kavoon; color: var(--Mahogany);">
-            <input type="checkbox" bind:checked={switchQAOption} on:change={handleSwitchQAChange} />
+            <input type="checkbox" bind:checked={switchQAOption} onchange={handleSwitchQAChange} />
             Switch Question/Answer
         </label>
     </div>
@@ -212,7 +228,7 @@
         <p style="font-family: Kavoon; color: var(--Mahogany);">No questions to display</p>
     {:else if completed}
         <p class="complete">Great job! Do you wish to reset?</p>
-        <button on:click={resetSession}>Reset</button>
+        <button onclick={resetSession}>Reset</button>
     {:else if multipleChoiceMode}
         <div class="question-panel">
             <h3>
@@ -224,24 +240,27 @@
             </h3>
         </div>
         <div class="choice-panel">
-            {#each getMultipleChoiceAnswers(index) as choice}
-                <button on:click={() => checkAnswer(choice)}>{choice}</button>
+            {#each getMultipleChoiceAnswers(index) as choice (choice)}
+                <button onclick={() => checkAnswer(choice)}>{choice}</button>
             {/each}
         </div>
         {#if feedbackMessage}
             <p class="feedback">{feedbackMessage}</p>
         {/if}
         <div style="display: flex; gap: 1em;">
-            <button on:click={decrement}>&lt;</button>
-            <button on:click={increment}>&gt;</button>
+            <button onclick={decrement}>&lt;</button>
+            <button onclick={increment}>&gt;</button>
         </div>
     {:else if matchCardsMode}
         <div class="match-mode">
             <div class="column">
                 <h2>Questions</h2>
-                {#each randomizedQuestions as q}
-                    {#if !matchedPairs.find(pair => pair.question === q)}
-                        <button class="match-card" on:click={() => handleMatchSelection('question', q)}>{q}</button>
+                {#each randomizedQuestions as q (q)}
+                    {#if !matchedPairs.find((pair) => pair.question === q)}
+                        <button
+                            class="match-card"
+                            onclick={() => handleMatchSelection('question', q)}>{q}</button
+                        >
                     {:else}
                         <div class="match-card blank"></div>
                     {/if}
@@ -249,9 +268,11 @@
             </div>
             <div class="column">
                 <h2>Answers</h2>
-                {#each randomizedAnswers as a}
-                    {#if !matchedPairs.find(pair => pair.answer === a)}
-                        <button class="match-card" on:click={() => handleMatchSelection('answer', a)}>{a}</button>
+                {#each randomizedAnswers as a (a)}
+                    {#if !matchedPairs.find((pair) => pair.answer === a)}
+                        <button class="match-card" onclick={() => handleMatchSelection('answer', a)}
+                            >{a}</button
+                        >
                     {:else}
                         <div class="match-card blank"></div>
                     {/if}
@@ -262,7 +283,7 @@
             <p class="feedback">{feedbackMessage}</p>
         {/if}
     {:else}
-        <button class={['card', { flipped }]} on:click={() => (flipped = !flipped)}>
+        <button class={['card', { flipped }]} onclick={() => (flipped = !flipped)}>
             <div class="front">
                 <h3>
                     {#if switchQAOption}
@@ -283,8 +304,8 @@
             </div>
         </button>
         <div style="display: flex; gap: 1em;">
-            <button on:click={decrement}>&lt;</button>
-            <button on:click={increment}>&gt;</button>
+            <button onclick={decrement}>&lt;</button>
+            <button onclick={increment}>&gt;</button>
         </div>
     {/if}
 </div>
