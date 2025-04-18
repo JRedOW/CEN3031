@@ -1,75 +1,11 @@
 <script lang="ts">
-    import type { Set } from '$lib/interfaces';
-
     let { data } = $props();
     let create_message = $state('');
     let sets = $state(data.sets);
-
-    const default_set = (): Set => {
-        return {
-            title: 'My New Set (' + sets.length + ')',
-            questions: [],
-            last_question_id: 0
-        };
-    };
-
-    let createSet = async () => {
-        const new_set = default_set();
-
-        const response = await fetch('/sets/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                set_data: new_set
-            })
-        });
-
-        if (response.ok) {
-            const response_json = await response.json();
-            create_message = 'Created Set ' + response_json.new_set.id;
-
-            sets.push(response_json.new_set);
-        } else {
-            console.error('Failed to create set');
-            create_message = 'Failed to create set';
-        }
-    };
-
-    let deleteSet = async (setId: number) => {
-        const response = await fetch('/sets/delete', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: setId // Send the correct set ID for deletion
-            })
-        });
-
-        if (response.ok) {
-            const response_json = await response.json();
-            create_message = 'Deleted Set ' + response_json.id;
-
-            sets = sets.filter((set: { id: number }) => set.id !== setId);
-        } else {
-            console.error('Failed to delete set');
-
-            // Handle specific errors based on status code
-            if (response.status === 404) {
-                create_message = 'Set not found';
-            } else if (response.status === 500) {
-                create_message = 'Server error, could not delete set';
-            } else {
-                create_message = 'Failed to delete set';
-            }
-        }
-    };
 </script>
 
 <div style="padding:3em">
-    <h1 style="font-family:Kavoon;color:var(--Mahogany);padding-bottom:1em">My Sets</h1>
+    <h1 style="font-family:Kavoon;color:var(--Mahogany);padding-bottom:1em">Stats</h1>
 
     <ul style="list-style-type:none">
         <div>
@@ -87,10 +23,6 @@
             {/if}
         </div>
     </ul>
-
-    <button onclick={createSet} style="padding:0.1em;padding-left:0.5em;padding-right:0.5em"
-        >+</button
-    >
 </div>
 
 {#if false}

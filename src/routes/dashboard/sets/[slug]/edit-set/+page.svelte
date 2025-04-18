@@ -42,7 +42,6 @@
             incorrect: 0
         });
         this_set.last_question_id = newId;
-        this_set.last_question_id = newId;
     }
 
     function deleteQuestion(questionId: number) {

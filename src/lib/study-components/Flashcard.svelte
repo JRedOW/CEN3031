@@ -1,8 +1,4 @@
 <script lang="ts">
-    import type { Question } from '$lib/interfaces';
-    import { getContext } from 'svelte';
-    import returnQuestion from '../+page.svelte';
-
     interface CurrentQuestion {
         question: {
             definition: string;
@@ -12,7 +8,8 @@
         format: number;
     }
 
-    const currentQuestion: CurrentQuestion = getContext('currentQuestion');
+    let { currentQuestion = $bindable() }: { currentQuestion: CurrentQuestion } = $props();
+
     let flipped = $state(false);
 
     let front = $state(currentQuestion.question.term);

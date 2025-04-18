@@ -2,8 +2,8 @@ export interface Question {
     id: number;
     term: string;
     definition: string;
-    correct: number;
-    incorrect: number;
+    correct?: number;
+    incorrect?: number;
 }
 
 export interface Set {

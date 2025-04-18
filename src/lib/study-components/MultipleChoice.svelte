@@ -1,7 +1,5 @@
 <script lang="ts">
     import type { Question } from '$lib/interfaces';
-    import { getContext } from 'svelte';
-    import returnQuestion from '../+page.svelte';
 
     interface CurrentQuestion {
         question: {
@@ -11,8 +9,12 @@
         type: number;
         format: number;
     }
-    const currentQuestion: CurrentQuestion = getContext('currentQuestion');
-    let { correct = $bindable() } = $props();
+
+    let {
+        correct = $bindable(false),
+        currentQuestion = $bindable()
+    }: { correct: boolean; currentQuestion: CurrentQuestion } = $props();
+
     let questionType = $state(0);
     let question = $state('');
     let answer = $state('');
@@ -64,7 +66,7 @@
         }
     }
 
-    function checkAnswer(clicked: Number) {
+    function checkAnswer(clicked: number) {
         answered = true;
         correct = false;
         for (let i = 0; i < answers.length; i++) {
@@ -87,11 +89,11 @@
         <button onclick={() => checkAnswer(2)}>{answers[2]}</button>
         <button onclick={() => checkAnswer(3)}>{answers[3]}</button>
     {:else}
-        {#each answers as thisAnswer, i}
+        {#each answers as this_answer, i (this_answer)}
             {#if i !== correctIndex}
-                <button style="background-color: var(--Poor)">{thisAnswer}</button>
+                <button style="background-color: var(--Poor)">{this_answer}</button>
             {:else}
-                <button style="background-color: var(--Good)">{thisAnswer}</button>
+                <button style="background-color: var(--Good)">{this_answer}</button>
             {/if}
         {/each}
     {/if}

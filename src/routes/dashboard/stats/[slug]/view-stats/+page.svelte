@@ -4,14 +4,14 @@
     let showingExtraData = $state(false);
     let currentIndex = $state(0);
 
-    function ShowExtraData(index: number) {
+    let showExtraData = (index: number) => {
         if (index == currentIndex) {
             showingExtraData = !showingExtraData;
         } else {
             showingExtraData = true;
             currentIndex = index;
         }
-    }
+    };
 </script>
 
 <div style="padding-left:3em;padding-top:3em">
@@ -21,13 +21,13 @@
     <h1 style="font-family:Kavoon">View Stats</h1>
     <div>
         {#each data.set.set_data.questions as q (q.id)}
-            <button style="min-width:80%" onclick={() => ShowExtraData(q.id)}>
+            <button style="min-width:80%" onclick={() => showExtraData(q.id)}>
                 <div style="margin-right:1em;float:left">{q.term}</div>
                 <div style="float:right">{q.definition}</div>
 
-                {#if q.correct / (q.correct + q.incorrect) > 0.75}
+                {#if (q.correct ?? 0) / ((q.correct ?? 0) + (q.incorrect ?? 0)) > 0.75}
                     <span class="dot" style="background: var(--Good)"></span>
-                {:else if q.correct / (q.correct + q.incorrect) > 0.4}
+                {:else if (q.correct ?? 0) / ((q.correct ?? 0) + (q.incorrect ?? 0)) > 0.4}
                     <span class="dot" style="background: var(--Okay)"></span>
                 {:else if q.correct != 0 || q.incorrect != 0}
                     <span class="dot" style="background: var(--Poor)"></span>
@@ -37,7 +37,7 @@
             </button>
             {#if showingExtraData && currentIndex == q.id}
                 <div class="smallContainer">
-                    <p>Times Seen: {q.correct + q.incorrect}</p>
+                    <p>Times Seen: {(q.correct ?? 0) + (q.incorrect ?? 0)}</p>
                     <p>Times Answered Correctly: {q.correct}</p>
                 </div>
             {/if}

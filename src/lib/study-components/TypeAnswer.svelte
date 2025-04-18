@@ -1,18 +1,4 @@
 <script lang="ts">
-    import type { Question } from '$lib/interfaces';
-    import { getContext } from 'svelte';
-
-    // const currentQuestion: CurrentQuestion = getContext('currentQuestion');
-
-    // let { currentQuestion = $bindable() } = $props();
-    let { correct = $bindable(), currentQuestion = $bindable() } = $props();
-    let typedResponse = $state('');
-    let questionType = $state(0);
-    let answered = $state(false);
-    // store question and answer as the definition and term may be swapped
-    let question = $state('');
-    let answer = $state('');
-
     interface CurrentQuestion {
         question: {
             definition: string;
@@ -20,6 +6,18 @@
         };
         type: number;
     }
+
+    let {
+        correct = $bindable(),
+        currentQuestion = $bindable()
+    }: { correct: boolean; currentQuestion: CurrentQuestion } = $props();
+
+    let typedResponse = $state('');
+    let questionType = $state(0);
+    let answered = $state(false);
+    // store question and answer as the definition and term may be swapped
+    let question = $state('');
+    let answer = $state('');
 
     export function randomizeType() {
         questionType = Math.floor(Math.random() * 2);

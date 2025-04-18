@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { setContext, tick } from 'svelte';
-    import TypeAnswer from './components/TypeAnswer.svelte';
+    import { tick } from 'svelte';
+    import TypeAnswer from '$lib/study-components/TypeAnswer.svelte';
     import type { Set } from '$lib/interfaces';
 
     let { data } = $props();
@@ -12,7 +12,7 @@
     let switchQAOption = $state(false);
     let multipleChoiceMode = $state(false);
     let matchCardsMode = $state(false);
-    let flashcardMode = $state(false);
+    let flashcardMode = $state(true);
     let typeAnswerMode = $state(false);
 
     // questions
@@ -24,7 +24,7 @@
     // for match cards
     let matchedPairs = $state<{ question: string; answer: string }[]>([]);
     // for type answer
-    let typeAnswerComponent: TypeAnswer;
+    let typeAnswerComponent: TypeAnswer | undefined = $state(undefined);
 
     // track data
     let answeredCorrectly = new Set<number>();
@@ -103,7 +103,7 @@
         feedbackMessage = '';
         currentQuestion = {
             question: studyQuestions[index],
-            type: switchQAOption ? 0 : 1
+            type: switchQAOption ? 1 : 0
         };
 
         await tick();
@@ -144,10 +144,12 @@
     function increment() {
         if (typeAnswerMode) {
             if (correct) {
-                data.set.set_data.questions[index].correct++;
+                data.set.set_data.questions[index].correct =
+                    (data.set.set_data.questions[index].correct || 0) + 1;
                 updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
             } else {
-                data.set.set_data.questions[index].incorrect++;
+                data.set.set_data.questions[index].incorrect =
+                    (data.set.set_data.questions[index].incorrect || 0) + 1;
                 updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
             }
         }
@@ -184,7 +186,7 @@
             question: studyQuestions[index],
             type: switchQAOption ? 0 : 1
         };
-        if (typeAnswerMode) {
+        if (typeAnswerMode && typeAnswerComponent) {
             typeAnswerComponent.reset();
         }
     }
@@ -214,7 +216,8 @@
         if (choice === correct) {
             feedbackMessage = 'Correct!';
             answeredCorrectly.add(index);
-            data.set.set_data.questions[index].correct++;
+            data.set.set_data.questions[index].correct =
+                (data.set.set_data.questions[index].correct || 0) + 1;
             if (answeredCorrectly.size === studyQuestions.length) {
                 autoAdvanceTimeout = setTimeout(() => (completed = true), 1000);
             } else {
@@ -222,14 +225,17 @@
             }
         } else {
             feedbackMessage = `Incorrect. The correct answer is: ${correct}`;
-            data.set.set_data.questions[index].incorrect++;
+            data.set.set_data.questions[index].incorrect =
+                (data.set.set_data.questions[index].incorrect || 0) + 1;
         }
 
         if (correct) {
-            data.set.set_data.questions[index].correct++;
+            data.set.set_data.questions[index].correct =
+                (data.set.set_data.questions[index].correct || 0) + 1;
             updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
         } else {
-            data.set.set_data.questions[index].incorrect++;
+            data.set.set_data.questions[index].incorrect =
+                (data.set.set_data.questions[index].incorrect || 0) + 1;
             updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
         }
         if (autoAdvanceTimeout) {
