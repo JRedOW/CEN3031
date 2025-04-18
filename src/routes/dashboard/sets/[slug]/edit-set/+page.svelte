@@ -34,7 +34,6 @@
 
     function incrementTerms() {
         const newId = this_set.last_question_id + 1;
-        const newId = this_set.last_question_id + 1;
         this_set.questions.push({
             term: '',
             definition: '',

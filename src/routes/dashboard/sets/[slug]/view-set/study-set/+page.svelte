@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { setContext } from 'svelte';
+    import { setContext, tick } from 'svelte';
     import TypeAnswer from './components/TypeAnswer.svelte';
+    import type { Set } from '$lib/interfaces';
 
     let { data } = $props();
     const originalQuestions = data?.set?.set_data?.questions ?? [];
@@ -93,21 +94,61 @@
         resetMatchCards();
     }
 
-    function toggleTypeAnswer() {
+    async function toggleTypeAnswer() {
         typeAnswerMode = true;
         multipleChoiceMode = false;
         matchCardsMode = false;
         flashcardMode = false;
         flipped = false;
         feedbackMessage = '';
+        currentQuestion = {
+            question: studyQuestions[index],
+            type: switchQAOption ? 0 : 1
+        };
+
+        await tick();
+
+        if (typeAnswerComponent) {
+            typeAnswerComponent.reset();
+        }
     }
+
+    let updateQuestionCorrectCount = async (thisId: number) => {
+        let tempSet: Set = {
+            title: data.set.set_data.title,
+            questions: data.set.set_data.questions,
+            last_question_id: data.set.set_data.last_question_id
+        };
+
+        tempSet.questions[thisId].correct = data.set.set_data.questions[thisId].correct;
+        tempSet.questions[thisId].incorrect = data.set.set_data.questions[thisId].incorrect;
+
+        const response = await fetch('/sets/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: data.set.id,
+                set_data: tempSet
+            })
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Set saved: ', data);
+        } else {
+            console.error('Failed to save set');
+        }
+    };
 
     function increment() {
         if (typeAnswerMode) {
             if (correct) {
                 data.set.set_data.questions[index].correct++;
+                updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
             } else {
                 data.set.set_data.questions[index].incorrect++;
+                updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
             }
         }
         if (randomizeType) {
@@ -143,8 +184,9 @@
             question: studyQuestions[index],
             type: switchQAOption ? 0 : 1
         };
-
-        typeAnswerComponent.reset();
+        if (typeAnswerMode) {
+            typeAnswerComponent.reset();
+        }
     }
 
     function getMultipleChoiceAnswers(idx: number) {
@@ -181,6 +223,18 @@
         } else {
             feedbackMessage = `Incorrect. The correct answer is: ${correct}`;
             data.set.set_data.questions[index].incorrect++;
+        }
+
+        if (correct) {
+            data.set.set_data.questions[index].correct++;
+            updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
+        } else {
+            data.set.set_data.questions[index].incorrect++;
+            updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
+        }
+        if (autoAdvanceTimeout) {
+            clearTimeout(autoAdvanceTimeout);
+            autoAdvanceTimeout = null;
         }
     }
 
@@ -241,8 +295,9 @@
             completed = true;
         }
     }
-    // setContext('currentQuestion', currentQuestion);
 </script>
+
+<!-- SWITCH MODE BUTTONS -->
 
 <div style="display: flex; justify-content: space-between; padding: 1em;">
     <div>
@@ -264,6 +319,9 @@
             {/if}
         </div>
     </div>
+
+    <!-- TOGGLEABLE OPTIONS -->
+
     <div style="display: flex; gap: 1em;">
         <label style="font-family: Kavoon; color: var(--Mahogany);">
             <input type="checkbox" bind:checked={shuffleOption} onchange={handleShuffleChange} />
@@ -309,7 +367,6 @@
             <p class="feedback">{feedbackMessage}</p>
         {/if}
         <div style="display: flex; gap: 1em;">
-            <!-- <button onclick={decrement}>&lt;</button> -->
             <button onclick={increment}>&gt;</button>
         </div>
     {:else if matchCardsMode}
@@ -347,10 +404,8 @@
             <button onclick={increment}>&gt;</button>
         </div>
     {:else if typeAnswerMode}
-        {currentQuestion.question.term} : {currentQuestion.question.definition}
         <TypeAnswer bind:this={typeAnswerComponent} bind:currentQuestion bind:correct />
         <div style="display: flex; gap: 1em;">
-            <!-- <button onclick={decrement}>&lt;</button> -->
             <button onclick={increment}>&gt;</button>
         </div>
     {:else}
