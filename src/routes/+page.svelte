@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-
     let { data } = $props();
 
     const user_id = data.user_id;
@@ -29,7 +27,7 @@
             const result = await response.json();
             create_message = 'Created User ' + result.id;
 
-            if (login_new_account) await goto('/dashboard/');
+            if (login_new_account) window.location.replace('/dashboard/');
         } else {
             create_message = 'Failed to create user';
         }
@@ -46,7 +44,7 @@
             const result = await response.json();
             login_message = 'Logged In User ' + result.id;
 
-            await goto('/dashboard/');
+            window.location.replace('/dashboard/');
         } else {
             login_message = 'Failed to login';
         }
