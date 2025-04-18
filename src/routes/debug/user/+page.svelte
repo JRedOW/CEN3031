@@ -30,6 +30,8 @@
         if (response.ok) {
             const data = await response.json();
             create_message = 'Created User ' + data.id;
+
+            if (login_new_account) window.location.reload();
         } else {
             console.error('Failed to create user');
             create_message = 'Failed to create user';
@@ -51,6 +53,8 @@
         if (response.ok) {
             const data = await response.json();
             login_message = 'Logged In User ' + data.id;
+
+            window.location.reload();
         } else {
             console.error('Failed to login');
             login_message = 'Failed to login';
@@ -69,8 +73,9 @@
             const data = await response.json();
 
             console.log('Logged out: ', data);
-
             logout_message = 'Logged Out User';
+
+            window.location.reload();
         } else {
             console.error('Failed to logout');
             logout_message = 'Failed to logout';

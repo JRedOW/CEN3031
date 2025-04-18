@@ -2,6 +2,7 @@
     import { page } from '$app/state';
     import '$lib/styles/fonts.css';
     import '$lib/styles/colors.css';
+
     let { children } = $props();
 
     let links = [
@@ -9,11 +10,30 @@
         { url: '/dashboard/sets', text: 'sets' },
         { url: '/dashboard/example2', text: 'example 2' }
     ];
+
+    let logout = async () => {
+        const response = await fetch('/user/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ redirect: true })
+        });
+
+        if (response.ok) {
+            window.location.replace('/');
+        } else {
+            const data = await response.json();
+            console.error(data.message);
+        }
+    };
 </script>
 
 <div id="grid_root">
     <div id="grid_header">
-        <p style="font-family:Kavoon;font-size:3em;color:white">StudyBuddy</p>
+        <p class="logo">StudyBuddy</p>
+
+        <button onclick={logout} class="logout-button">Logout</button>
     </div>
 
     <div id="grid_side">
@@ -25,9 +45,7 @@
                 class={page.url.pathname === link.url ? '' : 'hoverable'}
                 href={link.url}
             >
-                <p style="font-family:Kavoon;font-size: 1.8em;font-weight: bold;">
-                    {link.text}
-                </p>
+                <p style="font-family:Kavoon;font-size: 1.8em;font-weight: bold;">{link.text}</p>
             </a>
             <div style="height: 2px;width: 80%;background-color: var(--Pumpkin);"></div>
         {/each}
@@ -46,7 +64,6 @@
         grid-template-areas:
             'header header'
             'side main';
-
         width: 100vw;
         height: 100vh;
     }
@@ -54,12 +71,40 @@
     #grid_header {
         grid-area: header;
         background-color: var(--Pumpkin);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1em;
+        position: relative;
+    }
+
+    .logo {
+        font-family: Kavoon;
+        font-size: 3em;
+        color: white;
+        margin: 0;
+    }
+
+    .logout-button {
+        background-color: white;
+        color: var(--Mahogany);
+        font-family: Kavoon;
+        font-size: 1em;
+        padding: 0.4em 1em;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .logout-button:hover {
+        background-color: var(--Rust);
+        color: white;
     }
 
     #grid_side {
         grid-area: side;
         background-color: var(--Rust);
-
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -69,6 +114,7 @@
 
     #grid_main {
         grid-area: main;
+        padding: 1em;
     }
 
     a:hover.hoverable {
@@ -77,5 +123,6 @@
 
     :global(body) {
         background-color: var(--Cream);
+        margin: 0;
     }
 </style>
