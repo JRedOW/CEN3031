@@ -1,13 +1,13 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+
     let { data } = $props();
 
-    const user_id = (data as any).user_id;
+    const user_id = data.user_id;
 
     let email = $state('');
     let password = $state('');
     let login_message = $state('');
-
-    let logout_message = $state('');
 
     let new_email = $state('');
     let new_password = $state('');
@@ -28,6 +28,8 @@
         if (response.ok) {
             const result = await response.json();
             create_message = 'Created User ' + result.id;
+
+            if (login_new_account) await goto('/dashboard/');
         } else {
             create_message = 'Failed to create user';
         }
@@ -43,21 +45,10 @@
         if (response.ok) {
             const result = await response.json();
             login_message = 'Logged In User ' + result.id;
+
+            await goto('/dashboard/');
         } else {
             login_message = 'Failed to login';
-        }
-    };
-
-    const logout = async () => {
-        const response = await fetch('/user/logout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.ok) {
-            logout_message = 'Logged Out User';
-        } else {
-            logout_message = 'Failed to logout';
         }
     };
 </script>
@@ -72,42 +63,32 @@
             {#if user_id}
                 <p>Already Logged In</p>
             {:else}
-                <label>Email:</label>
+                <h3>Email:</h3>
                 <input type="text" bind:value={email} />
 
-                <label>Password:</label>
+                <h3>Password:</h3>
                 <input type="password" bind:value={password} />
 
-                <button on:click={login}>Login</button>
+                <button onclick={login}>Login</button>
                 <p class="message">{login_message}</p>
-            {/if}
-        </div>
-
-        <div class="auth-box">
-            <h2>Logout</h2>
-            {#if user_id}
-                <button on:click={logout}>Logout</button>
-                <p class="message">{logout_message}</p>
-            {:else}
-                <p>Not Logged In</p>
             {/if}
         </div>
 
         <div class="auth-box">
             <h2>Create Account</h2>
 
-            <label>New Email:</label>
+            <h3>New Email:</h3>
             <input type="text" bind:value={new_email} />
 
-            <label>New Password:</label>
+            <h3>New Password:</h3>
             <input type="password" bind:value={new_password} />
 
-            <label>
+            <h3>
                 <input type="checkbox" bind:checked={login_new_account} />
                 Login to new account after creation
-            </label>
+            </h3>
 
-            <button on:click={createUser}>Create User</button>
+            <button onclick={createUser}>Create User</button>
             <p class="message">{create_message}</p>
         </div>
     </div>
@@ -161,7 +142,7 @@
         font-size: 0.9em;
     }
 
-    label {
+    h3 {
         font-size: 0.9em;
         color: var(--Mahogany);
     }
@@ -179,7 +160,7 @@
     }
 
     .message {
-        color:red;
+        color: red;
         font-size: 0.8em;
         margin-top: 0.3em;
     }
