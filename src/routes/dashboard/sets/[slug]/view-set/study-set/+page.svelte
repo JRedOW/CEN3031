@@ -1,25 +1,45 @@
 <script lang="ts">
+    import { tick } from 'svelte';
+    import TypeAnswer from '$lib/study-components/TypeAnswer.svelte';
+    import type { Set } from '$lib/interfaces';
+
     let { data } = $props();
     const originalQuestions = data?.set?.set_data?.questions ?? [];
     let studyQuestions = $state([...originalQuestions]);
 
+    // which question type
     let shuffleOption = $state(false);
     let switchQAOption = $state(false);
     let multipleChoiceMode = $state(false);
     let matchCardsMode = $state(false);
+    let flashcardMode = $state(true);
+    let typeAnswerMode = $state(false);
+
+    // questions
+    let currentQuestion = $state({ question: data.set.set_data.questions[0], type: 0 });
+    let correct = $state(false);
+
+    // for flashcards
     let flipped = $state(false);
+    // for match cards
+    let matchedPairs = $state<{ question: string; answer: string }[]>([]);
+    // for type answer
+    let typeAnswerComponent: TypeAnswer | undefined = $state(undefined);
+
+    // track data
+    let answeredCorrectly = new Set<number>();
+    let selectedQuestion: string | null = null;
+    let selectedAnswer: string | null = null;
+
     let index = $state(0);
     let feedbackMessage = $state('');
-    let answeredCorrectly = new Set<number>();
     let completed = $state(false);
     let autoAdvanceTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    let selectedQuestion: string | null = null;
-    let selectedAnswer: string | null = null;
-    let matchedPairs = $state<{ question: string; answer: string }[]>([]);
-
     let randomizedQuestions = $state<string[]>([]);
     let randomizedAnswers = $state<string[]>([]);
+
+    let randomizeType = $state(false);
 
     function shuffleArray<T>(arr: Array<T>): Array<T> {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -38,12 +58,19 @@
 
     function handleSwitchQAChange() {
         flipped = switchQAOption;
+        if (switchQAOption) {
+            currentQuestion.type = 0;
+        } else {
+            currentQuestion.type = 1;
+        }
         feedbackMessage = '';
     }
 
     function toggleFlipMode() {
+        flashcardMode = true;
         multipleChoiceMode = false;
         matchCardsMode = false;
+        typeAnswerMode = false;
         flipped = false;
         feedbackMessage = '';
     }
@@ -51,6 +78,8 @@
     function toggleMultipleChoice() {
         multipleChoiceMode = true;
         matchCardsMode = false;
+        typeAnswerMode = false;
+        flashcardMode = false;
         flipped = false;
         feedbackMessage = '';
     }
@@ -58,12 +87,84 @@
     function toggleMatchMode() {
         matchCardsMode = true;
         multipleChoiceMode = false;
+        typeAnswerMode = false;
+        flashcardMode = false;
         flipped = false;
         feedbackMessage = '';
         resetMatchCards();
     }
 
+    async function toggleTypeAnswer() {
+        typeAnswerMode = true;
+        multipleChoiceMode = false;
+        matchCardsMode = false;
+        flashcardMode = false;
+        flipped = false;
+        feedbackMessage = '';
+        currentQuestion = {
+            question: studyQuestions[index],
+            type: switchQAOption ? 1 : 0
+        };
+
+        await tick();
+
+        if (typeAnswerComponent) {
+            typeAnswerComponent.reset();
+        }
+    }
+
+    let updateQuestionCorrectCount = async (thisId: number) => {
+        let tempSet: Set = {
+            title: data.set.set_data.title,
+            questions: data.set.set_data.questions,
+            last_question_id: data.set.set_data.last_question_id
+        };
+
+        tempSet.questions[thisId].correct = data.set.set_data.questions[thisId].correct;
+        tempSet.questions[thisId].incorrect = data.set.set_data.questions[thisId].incorrect;
+
+        const response = await fetch('/sets/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: data.set.id,
+                set_data: tempSet
+            })
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Set saved: ', data);
+        } else {
+            console.error('Failed to save set');
+        }
+    };
+
     function increment() {
+        if (typeAnswerMode) {
+            if (correct) {
+                data.set.set_data.questions[index].correct =
+                    (data.set.set_data.questions[index].correct || 0) + 1;
+                updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
+            } else {
+                data.set.set_data.questions[index].incorrect =
+                    (data.set.set_data.questions[index].incorrect || 0) + 1;
+                updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
+            }
+        }
+        if (randomizeType) {
+            let randInt = Math.floor(Math.random() * 4);
+            if (randInt == 0) {
+                toggleFlipMode();
+            } else if (randInt == 1) {
+                toggleMatchMode();
+            } else if (randInt == 2) {
+                toggleMultipleChoice();
+            } else {
+                toggleTypeAnswer();
+            }
+        }
         if (studyQuestions.length === 0) return;
         let nextIndex = (index + 1) % studyQuestions.length;
         if (answeredCorrectly.size === studyQuestions.length) {
@@ -80,20 +181,13 @@
             clearTimeout(autoAdvanceTimeout);
             autoAdvanceTimeout = null;
         }
-    }
-
-    function decrement() {
-        if (studyQuestions.length === 0) return;
-        let prevIndex = (index - 1 + studyQuestions.length) % studyQuestions.length;
-        while (answeredCorrectly.has(prevIndex)) {
-            prevIndex = (prevIndex - 1 + studyQuestions.length) % studyQuestions.length;
-        }
-        index = prevIndex;
-        flipped = switchQAOption;
-        feedbackMessage = '';
-        if (autoAdvanceTimeout) {
-            clearTimeout(autoAdvanceTimeout);
-            autoAdvanceTimeout = null;
+        // currentQuestion.question = studyQuestions[index];
+        currentQuestion = {
+            question: studyQuestions[index],
+            type: switchQAOption ? 0 : 1
+        };
+        if (typeAnswerMode && typeAnswerComponent) {
+            typeAnswerComponent.reset();
         }
     }
 
@@ -122,6 +216,8 @@
         if (choice === correct) {
             feedbackMessage = 'Correct!';
             answeredCorrectly.add(index);
+            data.set.set_data.questions[index].correct =
+                (data.set.set_data.questions[index].correct || 0) + 1;
             if (answeredCorrectly.size === studyQuestions.length) {
                 autoAdvanceTimeout = setTimeout(() => (completed = true), 1000);
             } else {
@@ -129,6 +225,22 @@
             }
         } else {
             feedbackMessage = `Incorrect. The correct answer is: ${correct}`;
+            data.set.set_data.questions[index].incorrect =
+                (data.set.set_data.questions[index].incorrect || 0) + 1;
+        }
+
+        if (correct) {
+            data.set.set_data.questions[index].correct =
+                (data.set.set_data.questions[index].correct || 0) + 1;
+            updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
+        } else {
+            data.set.set_data.questions[index].incorrect =
+                (data.set.set_data.questions[index].incorrect || 0) + 1;
+            updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
+        }
+        if (autoAdvanceTimeout) {
+            clearTimeout(autoAdvanceTimeout);
+            autoAdvanceTimeout = null;
         }
     }
 
@@ -157,7 +269,8 @@
     function getCurrentModeLabel() {
         if (multipleChoiceMode) return 'Multiple Choice Mode';
         if (matchCardsMode) return 'Match Cards Mode';
-        return 'Flip Mode';
+        if (typeAnswerMode) return 'Type Answer Mode';
+        return 'Flashcard Mode';
     }
 
     function handleMatchSelection(type: 'question' | 'answer', value: string) {
@@ -190,6 +303,8 @@
     }
 </script>
 
+<!-- SWITCH MODE BUTTONS -->
+
 <div style="display: flex; justify-content: space-between; padding: 1em;">
     <div>
         <h1 style="font-family: Kavoon; color: var(--Rust); margin-bottom: 0.3em;">
@@ -202,11 +317,17 @@
             {#if !matchCardsMode}
                 <button onclick={toggleMatchMode}>Match Cards Mode</button>
             {/if}
-            {#if multipleChoiceMode || matchCardsMode}
+            {#if !typeAnswerMode}
+                <button onclick={toggleTypeAnswer}>Type Answer Mode</button>
+            {/if}
+            {#if !flashcardMode}
                 <button onclick={toggleFlipMode}>Flip Mode</button>
             {/if}
         </div>
     </div>
+
+    <!-- TOGGLEABLE OPTIONS -->
+
     <div style="display: flex; gap: 1em;">
         <label style="font-family: Kavoon; color: var(--Mahogany);">
             <input type="checkbox" bind:checked={shuffleOption} onchange={handleShuffleChange} />
@@ -215,6 +336,10 @@
         <label style="font-family: Kavoon; color: var(--Mahogany);">
             <input type="checkbox" bind:checked={switchQAOption} onchange={handleSwitchQAChange} />
             Switch Question/Answer
+        </label>
+        <label style="font-family: Kavoon; color: var(--Mahogany);">
+            <input type="checkbox" bind:checked={randomizeType} onchange={handleShuffleChange} />
+            Randomize Format
         </label>
     </div>
 </div>
@@ -248,7 +373,6 @@
             <p class="feedback">{feedbackMessage}</p>
         {/if}
         <div style="display: flex; gap: 1em;">
-            <button onclick={decrement}>&lt;</button>
             <button onclick={increment}>&gt;</button>
         </div>
     {:else if matchCardsMode}
@@ -282,6 +406,14 @@
         {#if feedbackMessage}
             <p class="feedback">{feedbackMessage}</p>
         {/if}
+        <div style="display: flex; gap: 1em;">
+            <button onclick={increment}>&gt;</button>
+        </div>
+    {:else if typeAnswerMode}
+        <TypeAnswer bind:this={typeAnswerComponent} bind:currentQuestion bind:correct />
+        <div style="display: flex; gap: 1em;">
+            <button onclick={increment}>&gt;</button>
+        </div>
     {:else}
         <button class={['card', { flipped }]} onclick={() => (flipped = !flipped)}>
             <div class="front">
@@ -304,7 +436,7 @@
             </div>
         </button>
         <div style="display: flex; gap: 1em;">
-            <button onclick={decrement}>&lt;</button>
+            <!-- <button onclick={decrement}>&lt;</button> -->
             <button onclick={increment}>&gt;</button>
         </div>
     {/if}

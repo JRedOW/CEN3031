@@ -37,7 +37,9 @@
         this_set.questions.push({
             term: '',
             definition: '',
-            id: newId
+            id: newId,
+            correct: 0,
+            incorrect: 0
         });
         this_set.last_question_id = newId;
     }

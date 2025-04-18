@@ -8,7 +8,7 @@
     let links = [
         { url: '/dashboard', text: 'home' },
         { url: '/dashboard/sets', text: 'sets' },
-        { url: '/dashboard/example2', text: 'example 2' }
+        { url: '/dashboard/stats', text: 'stats' }
     ];
 
     let logout = async () => {
