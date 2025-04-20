@@ -2,7 +2,7 @@ extends Character;
 
 var reset_clock := -1.0;
 @export var MikuSprite: AnimatedSprite2D;
-@export var ResetTime := 2.0;
+@export var ResetTime := 1.5;
 
 
 func _process(delta: float) -> void:
