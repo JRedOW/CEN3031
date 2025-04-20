@@ -124,7 +124,7 @@
     .auth-box {
         background-color: white;
         padding: 1.5em;
-        border-radius: 10px;
+        border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         width: 250px;
         display: flex;
@@ -155,6 +155,19 @@
         padding: 0.5em;
         cursor: pointer;
         margin-top: 0.5em;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+    }
+
+    input:focus{
+        outline: none;
+        border-color: var(--Mahogany);
+    }
+
+    input:placeholder {
+        font-style: italic;
     }
 
     .message {
