@@ -70,9 +70,9 @@ grow_vertical = 2
 
 [node name="LoadingText" type="RichTextLabel" parent="Loading/Center"]
 layout_mode = 0
-offset_left = -150.0
+offset_left = -200.0
 offset_top = 40.0
-offset_right = 150.0
+offset_right = 200.0
 offset_bottom = 140.0
 bbcode_enabled = true
 text = "[font_size=48]Null

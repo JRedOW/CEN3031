@@ -69,6 +69,14 @@
         )}>Send Testing Miku</button
     >
     <h3 style="margin: 0px">|</h3>
+    <button
+        onclick={sendCharacter(
+            'NotsuneMiku',
+            'characters/notsune_miku.pck',
+            'notsune_miku/NotsuneMiku.tscn'
+        )}>Send Notsune Miku</button
+    >
+    <h3 style="margin: 0px">|</h3>
     <input type="number" style="width: 30px" bind:value={character_delay} />
 </div>
 
