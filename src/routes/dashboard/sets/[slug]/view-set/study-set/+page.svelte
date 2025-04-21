@@ -346,7 +346,8 @@
 
 <div class="container">
     {#if data?.set}
-        <a href="/dashboard/sets/{data.set.id}/view-set">view set</a>
+        <a href="/dashboard/sets/{data.set.id}/view-set"
+        class="view-set-btn">View Set</a>
     {/if}
 
     {#if studyQuestions.length === 0}
@@ -443,6 +444,23 @@
 </div>
 
 <style>
+    .view-set-btn {
+        font-family: Kavoon;
+        font-size: large;
+        color: white;
+        background-color: var(--Pumpkin);
+        border: none;
+        border-radius: 8px;
+        padding: 0.5em 1em;
+        text-decoration: none;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        transition: transform 0.1s;
+        display: inline-block;
+        margin-bottom: 1em;
+    }
+    .view-set-btn:hover {
+        transform: scale(1.05);
+    }
     h3 {
         font-family: ComicSans;
         font-size: x-large;

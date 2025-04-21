@@ -25,10 +25,10 @@
         if (response.ok) {
             const data = await response.json();
             console.log('Set saved: ', data);
-            save_message = 'saved!';
+            save_message = 'Saved!';
         } else {
             console.error('Failed to save set');
-            save_message = 'not saved';
+            save_message = 'Not saved';
         }
     };
 
@@ -50,8 +50,9 @@
 </script>
 
 <div style="padding:3em">
-    <a href="/dashboard/sets">my sets</a>
-    <h1 style="font-family:Kavoon">Edit Set</h1>
+    <a href="/dashboard/sets" class="nav-btn">← My Sets</a>
+    
+    <h1 class="title">Edit Set</h1>
 
     <div>
         <div>
@@ -92,7 +93,8 @@
             {/each}
 
             {#if this_set.questions.length == 0}
-                <p>you have no questions! Add a question</p>
+                <p>Add a title!</p>
+                <p>You have no questions, add a question!</p>
             {/if}
 
             <div style="padding:3em;margin:auto">
@@ -113,6 +115,27 @@
 </div>
 
 <style>
+    .title {
+        font-family: Kavoon;
+        font-size: 2rem;
+        text-align: center;
+        margin: 0;
+        margin-bottom: 1.5em;
+        color: var(--Rust);
+    }
+    .nav-btn {
+        font-family: Kavoon;
+        font-size: x-large;
+        color: White;
+        background-color: var(--Pumpkin);
+        padding: 0.1em 0.5em;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin: -1em 0 1em -1em;
+    }
     span {
         background-color: White;
         border-radius: 8px;
