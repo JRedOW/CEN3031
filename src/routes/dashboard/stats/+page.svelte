@@ -19,7 +19,7 @@
                 </div>
             {/each}
             {#if sets.length === 0}
-                <h2 style="text-align:center">You have no sets! Create one</h2>
+                <h2 style="text-align:center">you have no sets! Create one</h2>
             {/if}
         </div>
     </ul>
