@@ -1,7 +1,5 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import '$lib/styles/fonts.css';
-    import '$lib/styles/colors.css';
 
     let { children } = $props();
 

@@ -2,7 +2,7 @@
     let { children } = $props();
 </script>
 
-<h1>layout</h1>
+<!-- <h1>layout</h1> -->
 
 <main>
     {@render children()}

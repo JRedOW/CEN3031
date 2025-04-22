@@ -15,8 +15,8 @@
 </script>
 
 <div style="padding-left:3em;padding-top:3em">
-    <p>{data.set.id}</p>
-    <a href="/dashboard/sets">my sets</a>
+    <!-- <p>{data.set.id}</p> -->
+    <a href="/dashboard/sets" class="nav-btn">← My Sets</a>
 
     <h1 style="font-family:Kavoon">View Stats</h1>
     <div>
@@ -49,6 +49,20 @@
     h1 {
         font-family: Kavoon;
         color: var(--Rust);
+    }
+
+    .nav-btn {
+        font-family: Kavoon;
+        font-size: x-large;
+        color: White;
+        background-color: var(--Pumpkin);
+        padding: 0.1em 0.5em;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin: -1em 0 1em -1em;
     }
     .dot {
         height: 25px;
