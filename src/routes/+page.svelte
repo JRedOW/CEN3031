@@ -162,7 +162,7 @@
         transform: translateY(-2px);
     }
 
-    input:focus{
+    input:focus {
         outline: none;
         border-color: var(--Mahogany);
     }

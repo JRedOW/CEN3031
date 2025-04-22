@@ -346,8 +346,7 @@
 
 <div class="container">
     {#if data?.set}
-        <a href="/dashboard/sets/{data.set.id}/view-set"
-        class="view-set-btn">View Set</a>
+        <a href="/dashboard/sets/{data.set.id}/view-set" class="view-set-btn">View Set</a>
     {/if}
 
     {#if studyQuestions.length === 0}
@@ -453,7 +452,7 @@
         border-radius: 8px;
         padding: 0.5em 1em;
         text-decoration: none;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         transition: transform 0.1s;
         display: inline-block;
         margin-bottom: 1em;

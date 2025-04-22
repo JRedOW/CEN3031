@@ -50,7 +50,7 @@
         font-family: Kavoon;
         color: var(--Rust);
     }
-    
+
     .nav-btn {
         font-family: Kavoon;
         font-size: x-large;

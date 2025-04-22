@@ -50,8 +50,8 @@
 </script>
 
 <div style="padding:3em">
-    <a href="/dashboard/sets" class="nav-btn">← My Sets</a>
-    
+    <a href="/dashboard/sets" class="nav-btn">← My Sets</a>
+
     <h1 class="title">Edit Set</h1>
 
     <div>
