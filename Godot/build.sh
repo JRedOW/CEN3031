@@ -41,3 +41,4 @@ build_character_pack () {
 }
 
 build_character_pack "Testing Miku" testing_miku.pck
+build_character_pack "Notsune Miku" notsune_miku.pck

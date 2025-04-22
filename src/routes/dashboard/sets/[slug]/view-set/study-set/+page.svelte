@@ -2,10 +2,14 @@
     import { tick } from 'svelte';
     import TypeAnswer from '$lib/study-components/TypeAnswer.svelte';
     import type { Set } from '$lib/interfaces';
+    import ReactionView from '$lib/ReactionView.svelte';
 
     let { data } = $props();
     const originalQuestions = data?.set?.set_data?.questions ?? [];
     let studyQuestions = $state([...originalQuestions]);
+
+    // Reaction Engine
+    let reaction_engine: ReactionView;
 
     // which question type
     let shuffleOption = $state(false);
@@ -141,18 +145,21 @@
         }
     };
 
+    let answered_correct = () => {
+        data.set.set_data.questions[index].correct =
+            (data.set.set_data.questions[index].correct || 0) + 1;
+        updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
+        reaction_engine.correct(); // Update Reaction Engine
+    };
+
+    let answered_incorrect = () => {
+        data.set.set_data.questions[index].incorrect =
+            (data.set.set_data.questions[index].incorrect || 0) + 1;
+        updateQuestionCorrectCount(data.set.set_data.questions[index].id - 1); // Persist the change
+        reaction_engine.incorrect(); // Update Reaction Engine
+    };
+
     function increment() {
-        if (typeAnswerMode) {
-            if (correct) {
-                data.set.set_data.questions[index].correct =
-                    (data.set.set_data.questions[index].correct || 0) + 1;
-                updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
-            } else {
-                data.set.set_data.questions[index].incorrect =
-                    (data.set.set_data.questions[index].incorrect || 0) + 1;
-                updateQuestionCorrectCount(data.set.set_data.questions[index].id); // Persist the change
-            }
-        }
         if (randomizeType) {
             let randInt = Math.floor(Math.random() * 4);
             if (randInt == 0) {
@@ -184,7 +191,7 @@
         // currentQuestion.question = studyQuestions[index];
         currentQuestion = {
             question: studyQuestions[index],
-            type: switchQAOption ? 0 : 1
+            type: switchQAOption ? 1 : 0
         };
         if (typeAnswerMode && typeAnswerComponent) {
             typeAnswerComponent.reset();
@@ -216,8 +223,7 @@
         if (choice === correct) {
             feedbackMessage = 'Correct!';
             answeredCorrectly.add(index);
-            data.set.set_data.questions[index].correct =
-                (data.set.set_data.questions[index].correct || 0) + 1;
+            answered_correct();
             if (answeredCorrectly.size === studyQuestions.length) {
                 autoAdvanceTimeout = setTimeout(() => (completed = true), 1000);
             } else {
@@ -225,8 +231,7 @@
             }
         } else {
             feedbackMessage = `Incorrect. The correct answer is: ${correct}`;
-            data.set.set_data.questions[index].incorrect =
-                (data.set.set_data.questions[index].incorrect || 0) + 1;
+            answered_incorrect();
         }
 
         if (correct) {
@@ -290,8 +295,10 @@
                     { question: selectedQuestion, answer: selectedAnswer }
                 ];
                 feedbackMessage = 'Correct!';
+                answered_correct();
             } else {
                 feedbackMessage = 'Incorrect! Try again.';
+                answered_incorrect();
             }
             selectedQuestion = null;
             selectedAnswer = null;
@@ -410,7 +417,13 @@
             <button onclick={increment}>&gt;</button>
         </div>
     {:else if typeAnswerMode}
-        <TypeAnswer bind:this={typeAnswerComponent} bind:currentQuestion bind:correct />
+        <TypeAnswer
+            bind:this={typeAnswerComponent}
+            bind:currentQuestion
+            bind:correct
+            answeredCorrect={answered_correct}
+            answeredIncorrect={answered_incorrect}
+        />
         <div style="display: flex; gap: 1em;">
             <button onclick={increment}>&gt;</button>
         </div>
@@ -441,6 +454,8 @@
         </div>
     {/if}
 </div>
+
+<ReactionView bind:this={reaction_engine} />
 
 <style>
     .view-set-btn {

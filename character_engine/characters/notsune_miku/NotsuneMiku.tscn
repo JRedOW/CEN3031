@@ -1,0 +1,44 @@
+[gd_scene load_steps=8 format=3 uid="uid://63ph3u2uwn4n"]
+
+[ext_resource type="Script" uid="uid://d0ii8uj7r2lvm" path="res://characters/notsune_miku/NotsuneMiku.gd" id="1_p1xnr"]
+[ext_resource type="Texture2D" uid="uid://c8lqbxse4k7s7" path="res://characters/notsune_miku/neutral_miku.png" id="2_6k2vl"]
+[ext_resource type="Texture2D" uid="uid://b0wxa0700u35c" path="res://characters/notsune_miku/angry_miku.png" id="3_e1gpw"]
+[ext_resource type="Texture2D" uid="uid://lm2gvmcx6sfc" path="res://characters/notsune_miku/happy_miku.png" id="4_15gy1"]
+[ext_resource type="Texture2D" uid="uid://dqcfiwncpdb5j" path="res://characters/notsune_miku/surprised_miku.png" id="5_1sgkb"]
+[ext_resource type="Script" uid="uid://vl8c4xo1knrm" path="res://characters/notsune_miku/NotsuneMikuSprite.gd" id="6_e1gpw"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lqtvx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_6k2vl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_e1gpw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_15gy1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_1sgkb")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="NotsuneMiku" type="Node2D" node_paths=PackedStringArray("MikuSprite")]
+script = ExtResource("1_p1xnr")
+MikuSprite = NodePath("NotsuneMikuSprite")
+
+[node name="NotsuneMikuSprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_lqtvx")
+script = ExtResource("6_e1gpw")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_right = 300.0
+offset_bottom = 100.0
+bbcode_enabled = true
+text = "[font_size=48]のつねみく"
+horizontal_alignment = 1
+vertical_alignment = 1

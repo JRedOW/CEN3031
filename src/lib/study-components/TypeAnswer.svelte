@@ -9,8 +9,15 @@
 
     let {
         correct = $bindable(),
-        currentQuestion = $bindable()
-    }: { correct: boolean; currentQuestion: CurrentQuestion } = $props();
+        currentQuestion = $bindable(),
+        answeredCorrect = () => {},
+        answeredIncorrect = () => {}
+    }: {
+        correct: boolean;
+        currentQuestion: CurrentQuestion;
+        answeredCorrect?: () => void;
+        answeredIncorrect?: () => void;
+    } = $props();
 
     let typedResponse = $state('');
     let questionType = $state(0);
@@ -54,8 +61,12 @@
 
         if (typedResponse == answer) {
             correct = true;
+
+            answeredCorrect();
         } else {
             correct = false;
+
+            answeredIncorrect();
         }
     }
 </script>
